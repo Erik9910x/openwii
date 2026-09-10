@@ -96,6 +96,7 @@ let page = 0;
 
 /** Full-bleed art colours per channel — saturated, like real channel tiles. */
 const CHANNEL_ART = {
+  'mario-kart': ['#5ad8ff', '#3956d9'],
   'fruit-ninja': ['#ffb347', '#e8542f'],
   'alien-attack': ['#a3dd6b', '#43a047'],
   'shooting-range': ['#7fa8f4', '#3b5bd6'],

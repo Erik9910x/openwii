@@ -5,3 +5,7 @@ npm-debug.log*
 
 # Optional audio overrides — never ship copyrighted audio.
 audio/
+
+# Local generated model pack and browser evidence.
+/assets/
+/games/mario-kart/evidence/

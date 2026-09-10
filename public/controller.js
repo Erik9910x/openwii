@@ -32,6 +32,10 @@ const els = {
 
 let enabledAt = 0;   // when the user granted sensor permission
 let gameConnected = false;
+let wheelMode = false;
+let wheelModeUntil = 0;
+const heldButtons = {};
+const heldPointers = new Map();
 
 // ── Haptics + the remote's little speaker ──────────────────────────────────
 const buzz = (pattern) => { if (navigator.vibrate) navigator.vibrate(pattern); };
@@ -211,7 +215,7 @@ function flush() {
   const now = performance.now();
   if (now - lastEmit < MIN_EMIT_MS) return;
   lastEmit = now;
-  socket.emit('orientation', { ...latest, motion, t: now });
+  socket.emit('orientation', { ...latest, motion, t: now, ...(wheelMode ? { buttons: { ...heldButtons } } : {}) });
   sent += 1;
 }
 
@@ -395,7 +399,7 @@ async function lockUpright() {
       await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
     }
     if (screen.orientation && screen.orientation.lock) {
-      await screen.orientation.lock('portrait');
+      await screen.orientation.lock(wheelMode ? 'landscape' : 'portrait');
     }
   } catch { /* unsupported (iOS) or denied — the phone's own lock still works */ }
 }
@@ -427,11 +431,13 @@ els.enable.addEventListener('click', async () => {
 function onPress(el, fn, pattern = 10) {
   el.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    if (wheelMode && el !== els.power) return;
     buzz(pattern);
     fn();
   });
 }
 
+/* Legacy controls remain unchanged outside the wheel channel. */
 onPress(els.btnA, () => { socket.emit('command', { type: 'button', button: 'A' }); pSound('click'); }, 12);
 onPress(els.btnB, () => socket.emit('command', { type: 'button', button: 'B' }), 10);
 // HOME does what it did on the console: back to the menu.
@@ -444,6 +450,58 @@ onPress(els.power, () => speakerTalk(250), [5, 30, 10]);
 for (const dp of document.querySelectorAll('.dp')) {
   if (dp.tagName === 'BUTTON') onPress(dp, () => {}, 6);
 }
+
+// A short renewable profile lease prevents a closed game leaving a phone in
+// wheel mode. Old games never ask for it and retain their original controls.
+function clearWheelButtons() {
+  for (const k of Object.keys(heldButtons)) delete heldButtons[k];
+  heldPointers.clear();
+  if (socket.connected) socket.emit('command', { type: 'buttons', buttons: {} });
+}
+function setWheelMode(on) {
+  if (wheelMode === on) return;
+  clearWheelButtons(); wheelMode = on;
+  document.body.classList.toggle('wheel-mode', on);
+  els.sheet.classList.remove('open');
+  if (screen.orientation?.lock) screen.orientation.lock(on ? 'landscape' : 'portrait').catch(() => {});
+}
+socket.on('feedback', msg => {
+  if (msg.type === 'controller-profile' && msg.profile === 'wheel') {
+    wheelModeUntil = performance.now() + 2500; setWheelMode(true);
+  }
+  if (msg.type === 'controller-profile' && msg.profile === 'default') setWheelMode(false);
+});
+const wheelBindings = [[els.btnA, 'A'], [els.btnB, 'B'], [els.btn1, '1'], [els.btn2, '2'],
+  [document.querySelector('.dp.u'), 'up']];
+for (const [el, button] of wheelBindings) {
+  el.addEventListener('pointerdown', e => {
+    if (!wheelMode) return;
+    e.preventDefault(); el.setPointerCapture(e.pointerId);
+    heldPointers.set(e.pointerId, button); heldButtons[button] = true;
+    socket.emit('command', { type: 'button', button, pressed: true }); buzz(8);
+  });
+  const release = e => {
+    const key = heldPointers.get(e.pointerId); if (!key) return;
+    heldPointers.delete(e.pointerId);
+    heldButtons[key] = [...heldPointers.values()].includes(key);
+    if (!heldButtons[key]) socket.emit('command', { type: 'button-up', button: key });
+  };
+  for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(event, release);
+}
+els.btnHome.addEventListener('pointerdown', e => {
+  if (!wheelMode) return; e.preventDefault(); clearWheelButtons();
+  socket.emit('command', { type: 'home' }); setWheelMode(false);
+});
+els.btnMinus.addEventListener('pointerdown', e => {
+  if (!wheelMode) return; e.preventDefault(); socket.emit('command', { type: 'recentre' });
+});
+window.addEventListener('blur', clearWheelButtons);
+document.addEventListener('visibilitychange', () => { if (document.hidden) clearWheelButtons(); });
+socket.on('disconnect', () => { clearWheelButtons(); setWheelMode(false); });
+setInterval(() => {
+  if (wheelMode && performance.now() > wheelModeUntil) setWheelMode(false);
+  if (wheelMode && socket.connected) socket.emit('command', { type: 'buttons', buttons: { ...heldButtons } });
+}, 150);
 
 // Tap outside the sheet to close it.
 document.addEventListener('pointerdown', (e) => {
