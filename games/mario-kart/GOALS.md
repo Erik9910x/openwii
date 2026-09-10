@@ -1,5 +1,7 @@
 # Mario Kart — verification goal loop
 
+**Migration update:** this implementation is now on `main` at the repo root. The build record below describes the original isolated work; see [MIGRATION.md](MIGRATION.md) for the preserved Claude checkout and current paths.
+
 Implemented in `.worktrees/codex` on `codex/mario-kart`, based on `20392be`. The comparison working tree was not inspected or changed. No push. Generated models, optional audio and browser evidence remain ignored.
 
 **T** = headless test with independent behavioral or geometric expectations. **S** = browser screenshot/live check. Hardware claims are explicitly excluded where no physical phone was available.

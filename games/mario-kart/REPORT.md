@@ -1,6 +1,6 @@
 # Mario Kart — overnight build report
 
-The new **Mario Kart** channel is implemented in `/Users/patricksun/GitHub/OpenWii/.worktrees/codex` on `codex/mario-kart`. It is the second launcher tile after Fruit Ninja. The comparison checkout was left alone; nothing was pushed. The verification server is stopped when this task finishes.
+The **Mario Kart** channel was built on `codex/mario-kart` and is now integrated into `main` at `/Users/patricksun/GitHub/OpenWii`. It is the second launcher tile after Fruit Ninja. Claude's alternative is preserved separately; see [MIGRATION.md](MIGRATION.md). Nothing was pushed.
 
 ## What was built
 
@@ -39,12 +39,12 @@ The DOM-free simulation includes acceleration/coasting, brake/reverse, hopping a
 
 This is an original stadium/character reconstruction with arcade physics and approximate item probabilities. It does not use Nintendo meshes, textures or audio. Anti-gravity and flight share the track geometry, while the core steering/collision system uses planar course projection. Green-shell ricochets and homing shells travel in course coordinates. The visual and handling match to MK8 Deluxe remains a subjective review, and this Mac's measured browser performance does not establish performance on other hardware.
 
-## Morning phone test — use this worktree
+## Phone test — use the main checkout
 
-Run **from `.worktrees/codex`, not the repo root**:
+After the migration, run **from the repo root**:
 
 ```bash
-cd /Users/patricksun/GitHub/OpenWii/.worktrees/codex
+cd /Users/patricksun/GitHub/OpenWii
 npm start
 ```
 
@@ -61,7 +61,7 @@ PC fallback: **←/→ steer, Z gas, X brake, Shift drift, Space item, Enter con
 
 ## Rebuild and reproduce
 
-From the same worktree:
+From the main checkout:
 
 ```bash
 npm run build:kart-assets  # installed Blender; BLENDER may override its path
@@ -69,7 +69,7 @@ npm test
 HTTP=1 PORT=8080 NO_OPEN=1 npm start
 ```
 
-In a second terminal in the worktree:
+In a second terminal in the main checkout:
 
 ```bash
 npm run test:kart-browser
