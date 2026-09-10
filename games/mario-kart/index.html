@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mario Kart — OpenWii</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      { "imports": { "three": "/vendor/three/three.module.js" } }
+    </script>
+  </head>
+  <body>
+    <canvas id="game" aria-label="Mario Kart Stadium race"></canvas>
+    <div id="speed-lines"></div>
+    <div id="hit-flash"></div>
+    <div id="hud" hidden>
+      <div id="item-frame">
+        <div id="item-icon"></div>
+        <span id="item-caption">ITEM</span><span class="keycap">↑ / SPACE</span>
+      </div>
+      <div id="race-brand"><b>MARIOKART</b><span>STADIUM</span></div>
+      <div id="lap-panel">
+        <span id="coin-icon">●</span><b id="coins">00</b><i></i
+        ><span class="flag">⚑</span><b id="lap">1 <small>/ 3</small></b>
+      </div>
+      <div id="position">8<sup>th</sup></div>
+      <canvas id="minimap" width="250" height="220"></canvas>
+      <div id="speed">
+        <b id="speed-number">0</b><span>km/h</span>
+        <div id="speed-bar"></div>
+      </div>
+      <div id="drift-meter">
+        <span id="drift-label">MINI-TURBO</span>
+        <div id="drift-fill"></div>
+      </div>
+      <div id="notice"></div>
+      <div id="countdown">
+        <div id="lamps"><i></i><i></i><i></i></div>
+        <b id="count-number"></b>
+      </div>
+    </div>
+    <div id="topline">
+      <a href="/" id="home">⌂ <span>CHANNELS</span></a
+      ><span id="connection">KEYBOARD READY</span
+      ><button id="mute" aria-label="Toggle audio">♪ SOUND ON</button>
+    </div>
+    <div id="intro">
+      <div class="eyebrow">MUSHROOM CUP · 150cc</div>
+      <h1>MARIO<span>KART</span></h1>
+      <div class="stadium-name">MARIO KART STADIUM <span>★</span></div>
+      <p class="intro-copy">
+        Eight racers. Three laps.<br />One wheel. All yours.
+      </p>
+      <div id="characters" role="group" aria-label="Choose character"></div>
+      <div id="chosen">MARIO</div>
+      <button id="start">LET’S RACE <span>A / ENTER →</span></button>
+      <p class="controls">
+        <b>PHONE</b> Hold flat in landscape · roll to steer<br /><b>2</b> gas
+        &nbsp; <b>1</b> brake &nbsp; <b>B</b> drift &nbsp; <b>↑</b> item<br /><b
+          >KEYBOARD</b
+        >
+        ← → steer · Z gas · X brake · Shift drift · Space item
+      </p>
+    </div>
+    <div id="track-label">
+      <span>01 / MUSHROOM CUP</span><b>UNDER THE LIGHTS</b
+      ><small>3 LAPS · 8 RACERS · MARIO KART STADIUM</small>
+    </div>
+    <div id="bottomline">
+      <span id="wheel-status">Z gas · X brake · Shift drift · Space item</span
+      ><span>R / − recenter · I invert wheel · Esc pause</span>
+    </div>
+    <div id="pause" class="scrim" hidden>
+      <div class="pause-panel">
+        <h2>PAUSED</h2>
+        <p id="pause-reason">Take a breath. The race will wait.</p>
+        <button id="resume">BACK TO THE RACE</button
+        ><a href="/">Return to channels</a>
+      </div>
+    </div>
+    <div id="results" class="scrim" hidden>
+      <div class="results-panel">
+        <div class="eyebrow">MUSHROOM CUP · MARIO KART STADIUM</div>
+        <h2>FINISH!</h2>
+        <p id="result-summary"></p>
+        <div id="standings"></div>
+        <button id="again">RACE AGAIN <span>A / ENTER →</span></button
+        ><a href="/">Return to channels</a>
+      </div>
+    </div>
+    <div id="error" hidden></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="game.js"></script>
+  </body>
+</html>

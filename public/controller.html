@@ -243,9 +243,30 @@
     max-height: 170px; overflow: auto; user-select: text; -webkit-user-select: text;
   }
   .hide { display: none !important; }
+
+/* Wheel profile: large, separated multi-touch pedals with clear Wii labels. */
+#wheel-guide { display:none; }
+.wheel-mode #wheel-guide { display:block; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:4; color:#a9d8ff; text-shadow:0 1px 3px #0d243b; font:700 13px system-ui; text-align:center; }
+.wheel-mode #stage { width:100%; height:100%; }
+.wheel-mode #remote { width:94vw; height:85vh; max-height:none; max-width:850px; display:block; position:relative; transform:none; margin-top:22px; }
+.wheel-mode #remote > * { display:none; }
+.wheel-mode #remote #btn-a, .wheel-mode #remote #btn-b, .wheel-mode #remote #dpad, .wheel-mode #remote #ones, .wheel-mode #remote #row-mid { display:block; }
+.wheel-mode #btn-a { position:absolute; left:45%; top:15%; width:60px; height:60px; }
+.wheel-mode #btn-b { position:absolute; left:8%; bottom:13%; width:120px; height:65px; }
+.wheel-mode #dpad { position:absolute; left:9%; top:8%; width:100px; height:100px; }
+.wheel-mode #btn-1, .wheel-mode #btn-2 { position:absolute; right:8%; width:90px; height:76px; font-size:30px; }
+.wheel-mode #btn-1 { top:10%; }
+.wheel-mode #btn-2 { bottom:12%; background:#d5efff; border-color:#379cdd; }
+.wheel-mode #btn-home { position:absolute; bottom:12px; left:47%; }
+.wheel-mode #btn-minus { position:absolute; bottom:16px; left:35%; }
+.wheel-mode #btn-plus { display:none; }
+.wheel-mode #btn-b::after { content:' DRIFT'; font-size:12px; }
+.wheel-mode #btn-1::after { content:' BRAKE'; display:block; font-size:10px; }
+.wheel-mode #btn-2::after { content:' GAS'; display:block; font-size:10px; }
 </style>
 </head>
 <body>
+<div id="wheel-guide">MARIO KART · Hold flat, one hand at each end<br>Roll to steer · ↑ item · − recenter</div>
 <div id="app">
   <div id="stage">
     <div id="remote" class="asleep">

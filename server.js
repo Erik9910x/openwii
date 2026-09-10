@@ -38,6 +38,8 @@ app.use('/games', express.static(GAMES_DIR, { extensions: ['html'], ...NO_CACHE 
 app.use('/core', express.static(path.join(__dirname, 'core'), NO_CACHE));
 // Three.js straight from node_modules — no build step, no bundler.
 app.use('/vendor/three', express.static(path.join(__dirname, 'node_modules', 'three', 'build')));
+app.use('/vendor/three-examples', express.static(path.join(__dirname, 'node_modules', 'three', 'examples', 'jsm')));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), NO_CACHE));
 // Optional audio overrides. Gitignored: nothing copyrighted ships by default.
 app.use('/audio', express.static(path.join(__dirname, 'audio'), { fallthrough: true }));
 
