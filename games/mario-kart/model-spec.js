@@ -18,12 +18,84 @@ export function modelSpec(id) {
     red = "#e42c34";
   // Standard kart: rounded painted nose, separate cockpit, chrome pipe frame,
   // flared rear fairing, twin exhausts, axle hubs, tread rings and seat.
-  box("chassis", ch.color, [0, 0.67, 0], [1.55, 0.42, 2.45]);
+  ball("chassis", ch.color, [0, 0.63, -0.12], [0.81, 0.33, 1.43]);
   ball("nose", ch.color, [0, 0.78, -1.05], [0.86, 0.39, 0.68]);
   box("nose-stripe", white, [0, 1.01, -1.18], [0.2, 0.045, 0.55]);
   box("cockpit", black, [0, 0.95, 0.17], [1.07, 0.32, 1.14]);
-  box("seat", "#333950", [0, 1.2, 0.52], [0.8, 0.75, 0.27]);
-  box("rear-fairing", ch.color, [0, 1.04, 0.97], [1.63, 0.4, 0.42]);
+  box("seat", "#333950", [0, 1.1, 0.45], [0.7, 0.52, 0.2]);
+  // Exposed rear mechanical assembly gives the chase view the Standard Kart silhouette.
+  box("engine-block", "#3e4650", [0, 0.74, 1.0], [0.61, 0.47, 0.49]);
+  for (let j = 0; j < 4; j++)
+    box(
+      "engine-fin-" + j,
+      "#92999d",
+      [0, 0.66 + j * 0.06, 1.25],
+      [0.58, 0.025, 0.12],
+    );
+  tube(
+    "rear-axle",
+    "#9cabb2",
+    [0, 0.47, 0.9],
+    [0.095, 2.1, 0.095],
+    [0, 0, Math.PI / 2],
+  );
+  for (const side of [-1, 1]) {
+    ball(
+      "rear-fender" + side,
+      ch.color,
+      [side * 0.57, 0.81, 0.72],
+      [0.23, 0.13, 0.45],
+    );
+    box(
+      "rear-light" + side,
+      "#ad1225",
+      [side * 0.5, 0.78, 1.21],
+      [0.2, 0.1, 0.06],
+    );
+    tube(
+      "spring" + side,
+      "#efb32d",
+      [side * 0.68, 0.66, 0.75],
+      [0.08, 0.4, 0.08],
+    );
+    ball(
+      "sidepod" + side,
+      ch.color,
+      [side * 0.75, 0.7, -0.3],
+      [0.23, 0.21, 0.62],
+    );
+    box(
+      "sidepod-inlet" + side,
+      "#1d2833",
+      [side * 0.935, 0.69, 0.02],
+      [0.02, 0.14, 0.32],
+    );
+    tube(
+      "hub-carrier" + side,
+      "#8c9d9f",
+      [side * 0.86, 0.47, -0.87],
+      [0.1, 0.28, 0.1],
+      [0, 0, Math.PI / 2],
+    );
+    ball(
+      "fender-nose" + side,
+      ch.color,
+      [side * 0.59, 0.72, -1.12],
+      [0.28, 0.17, 0.5],
+    );
+  }
+  box("front-grille", "#202735", [0, 0.55, -1.61], [0.59, 0.13, 0.05]);
+  for (const x of [-0.52, 0.52])
+    ball("headlamp" + x, "#e9f2e3", [x, 0.69, -1.52], [0.16, 0.08, 0.06]);
+  add(
+    "nose-badge",
+    "text",
+    white,
+    [0, 0.985, -1.18],
+    [0.19, 0.19, 0.03],
+    [-Math.PI / 2, 0, 0],
+    { text: ch.name[0] },
+  );
   for (const sign of [-1, 1]) {
     tube(
       "side-frame-" + sign,
@@ -34,19 +106,66 @@ export function modelSpec(id) {
     );
     tube(
       "exhaust-" + sign,
-      "#a6b7d0",
-      [sign * 0.53, 0.7, 1.32],
-      [0.15, 0.52, 0.15],
+      "#283948",
+      [sign * 0.62, 0.91, 1.23],
+      [0.225, 0.62, 0.225],
       [Math.PI / 2, 0, 0],
     );
     tube(
       "exhaust-hole-" + sign,
       black,
-      [sign * 0.53, 0.7, 1.59],
-      [0.115, 0.015, 0.115],
+      [sign * 0.62, 0.91, 1.551],
+      [0.162, 0.012, 0.162],
       [Math.PI / 2, 0, 0],
     );
   }
+  // The chase silhouette is blue underbody, a compact engine, and twin gold-rimmed black exhausts.
+  box("rear-fairing", "#164ca5", [0, 0.48, 1.05], [1.36, 0.2, 0.66]);
+  for (const side of [-1, 1]) {
+    tube(
+      "exhaust-lip" + side,
+      "#e9b734",
+      [side * 0.62, 0.91, 1.53],
+      [0.223, 0.07, 0.223],
+      [Math.PI / 2, 0, 0],
+    );
+    tube(
+      "exhaust-throat" + side,
+      "#192329",
+      [side * 0.62, 0.91, 1.574],
+      [0.167, 0.014, 0.167],
+      [Math.PI / 2, 0, 0],
+    );
+    add(
+      "exhaust-inner-ring" + side,
+      "torus",
+      "#926c2c",
+      [side * 0.62, 0.91, 1.584],
+      [0.142, 0.142, 0.1],
+    );
+    tube(
+      "exhaust-collar" + side,
+      "#ba9b54",
+      [side * 0.62, 0.91, 1.3],
+      [0.232, 0.06, 0.232],
+      [Math.PI / 2, 0, 0],
+    );
+    for (const y of [0.62, 0.97])
+      ball(
+        "engine-bolt" + side + y,
+        "#b2bab9",
+        [side * 0.235, y, 1.305],
+        [0.035, 0.035, 0.02],
+      );
+  }
+  box("engine-cover", "#313e44", [0, 0.89, 1.31], [0.25, 0.19, 0.02]);
+  for (let i = -1; i <= 1; i++)
+    box(
+      "engine-vent" + i,
+      "#101920",
+      [i * 0.055, 0.9, 1.329],
+      [0.018, 0.09, 0.012],
+    );
   tube(
     "front-bumper",
     "#e7edf5",
@@ -60,7 +179,7 @@ export function modelSpec(id) {
     [-1, 0.9],
     [1, 0.9],
   ].entries()) {
-    add("wheel-" + i, "wheel", black, [x * 0.99, 0.46, z], [0.39, 0.34, 0.39]);
+    add("wheel-" + i, "wheel", black, [x * 0.99, 0.46, z], [0.45, 0.39, 0.45]);
   }
   // Short cartoon proportions read at chase-camera size. Each has a unique
   // silhouette, face details and rear silhouette, not just a palette swap.
@@ -86,6 +205,12 @@ export function modelSpec(id) {
   );
   if (["mario", "luigi"].includes(id)) {
     ball("overalls", blue, [0, 1.22, -0.07], [0.46, 0.35, 0.38]);
+    ball("overalls-back", blue, [0, 1.42, 0.265], [0.37, 0.29, 0.12]);
+    box("back-pocket", "#174aa7", [0.18, 1.37, 0.373], [0.17, 0.16, 0.024]);
+    for (const x of [-0.06, 0.06])
+      box("overall-seam" + x, "#316fc8", [x, 1.4, 0.384], [0.012, 0.3, 0.01]);
+    for (const x of [-0.26, 0.26])
+      box("back-strap" + x, blue, [x, 1.68, 0.285], [0.12, 0.3, 0.07]);
     for (const x of [-0.27, 0.27]) {
       box("strap" + x, blue, [x, 1.53, -0.275], [0.13, 0.48, 0.075]);
       ball("button" + x, gold, [x, 1.49, -0.33], [0.065, 0.065, 0.03]);
@@ -98,7 +223,7 @@ export function modelSpec(id) {
       [side * 0.37, 1.05, -0.65],
       [0.26, 0.21, 0.4],
     );
-    const arm = ball(
+    ball(
       "arm" + side,
       body,
       [side * (heavy ? 0.59 : 0.43), 1.45, -0.3],
@@ -145,7 +270,35 @@ export function modelSpec(id) {
       );
     }
     if (id === "mario" || id === "luigi") {
-      ball("hair", "#50291a", [0, headY - 0.09, 0.27], [0.4, 0.33, 0.18]);
+      ball("neck", skin, [0, headY - 0.35, 0.08], [0.18, 0.19, 0.18]);
+      ball("hair", "#56301c", [0, headY + 0.01, 0.25], [0.405, 0.27, 0.22]);
+      for (let i = -2; i <= 2; i++)
+        ball(
+          "hair-lock" + i,
+          "#56301c",
+          [i * 0.13, headY - 0.16 + Math.abs(i) * 0.025, 0.34],
+          [0.105, 0.13, 0.105],
+        );
+      for (const side of [-1, 1]) {
+        ball(
+          "sideburn" + side,
+          "#56301c",
+          [side * 0.38, headY - 0.02, -0.12],
+          [0.07, 0.18, 0.1],
+        );
+        ball(
+          "ear-inner" + side,
+          "#d9906c",
+          [side * 0.485, headY - 0.015, -0.034],
+          [0.029, 0.082, 0.055],
+        );
+        ball(
+          "brow" + side,
+          "#42241a",
+          [side * 0.16, headY + 0.24, -0.374],
+          [0.13, 0.046, 0.053],
+        );
+      }
       for (let i = -2; i <= 2; i++)
         ball(
           "mustache" + i,
@@ -153,14 +306,28 @@ export function modelSpec(id) {
           [i * 0.079, headY - 0.2, -0.421],
           [0.09, 0.073, 0.056],
         );
-      ball("cap", ch.color, [0, headY + 0.31, 0], [0.51, 0.26, 0.46]);
-      ball("brim", ch.color, [0, headY + 0.23, -0.4], [0.49, 0.07, 0.33]);
-      ball("cap-badge", white, [0, headY + 0.36, -0.419], [0.15, 0.14, 0.03]);
+      ball("cap", ch.color, [0, headY + 0.24, -0.005], [0.51, 0.39, 0.48]);
+      ball(
+        "cap-button",
+        ch.color,
+        [0, headY + 0.624, -0.005],
+        [0.047, 0.022, 0.047],
+      );
+      add(
+        "cap-band",
+        "torus",
+        id === "mario" ? "#ba1828" : "#187d38",
+        [0, headY + 0.11, 0.0],
+        [0.472, 0.445, 0.11],
+        [Math.PI / 2, 0, 0],
+      );
+      ball("brim", ch.color, [0, headY + 0.15, -0.43], [0.49, 0.055, 0.34]);
+      ball("cap-badge", white, [0, headY + 0.37, -0.438], [0.15, 0.14, 0.03]);
       add(
         "cap-letter",
         "text",
         ch.color,
-        [0, headY + 0.35, -0.455],
+        [0, headY + 0.36, -0.475],
         [0.19, 0.19, 0.03],
         [0, Math.PI, 0],
         { text: id === "mario" ? "M" : "L" },

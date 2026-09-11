@@ -27,7 +27,11 @@ try {
     viewport: { width: 1440, height: 900 },
   });
   page.on("pageerror", (e) => report.errors.push(e.message));
-  await page.goto("http://localhost:8080/games/mario-kart/?evidence=1");
+  page.on("console", (m) => {
+    if (m.type() === "error" && m.text().includes("THREE."))
+      report.errors.push(m.text());
+  });
+  await page.goto("http://localhost:8080/games/mario-kart/?evidence=1&sourceCourse=0");
   await page.waitForFunction(() => window.__kart?.assets);
   assert.equal(await page.evaluate(() => __kart.assets.loaded), 8);
   mark(
@@ -177,7 +181,7 @@ try {
   await fallback.route("**/assets/mario-kart/**", (r) =>
     r.fulfill({ status: 404, body: "" }),
   );
-  await fallback.goto("http://localhost:8080/games/mario-kart/?evidence=1");
+  await fallback.goto("http://localhost:8080/games/mario-kart/?evidence=1&sourceCourse=0");
   await fallback.waitForFunction(() => window.__kart?.assets);
   assert.equal(await fallback.evaluate(() => __kart.assets.fallback), 8);
   await fallback.screenshot({

@@ -1,7 +1,8 @@
+import { createSurfaceTrack } from './surface-track.js';
 /** Original stadium reconstruction, traced by eye from the research map.
  * Pure geometry shared by simulation, drawing, minimap and tests. Metres. */
-export const ROAD_HALF = 10;
-export const WALL_HALF = 14.5;
+export let ROAD_HALF = 10;
+export let WALL_HALF = 14.5;
 export const CONTROL_POINTS = [
   [365, 445, 0],
   [445, 432, 0],
@@ -11,13 +12,15 @@ export const CONTROL_POINTS = [
   [578, 548, 0],
   [555, 569, 0],
   [526, 546, 0],
-  [510, 483, 0],
-  [491, 404, 3],
-  [472, 328, 9],
-  [451, 301, 13],
-  [338, 263, 16],
-  [220, 222, 21],
-  [194, 194, 28],
+  // The return ramp crosses the opening straight. Keep a real underpass,
+  // including the deck thickness and chase-camera envelope.
+  [510, 483, 6],
+  [491, 404, 12],
+  [472, 328, 17],
+  [451, 301, 21],
+  [338, 263, 23],
+  [220, 222, 27],
+  [194, 194, 32],
   [195, 138, 38],
   [194, 92, 47],
   [178, 67, 49],
@@ -60,6 +63,10 @@ for (let i = 0; i < N; i++) {
         CONTROL_POINTS[(i + 2) % N][k],
         j / SUB,
       );
+    // Catmull-Rom's downhill tangent overshoots below the zero-height infield
+    // after landing. That buried both pavement and karts under the lawn.
+    // The course has no below-ground section; flatten that numerical undershoot.
+    p.y = Math.max(0, p.y);
     if (raw.length)
       length += Math.hypot(p.x - raw.at(-1).x, p.z - raw.at(-1).z);
     p.s = length;
@@ -68,16 +75,16 @@ for (let i = 0; i < N; i++) {
   }
 }
 length += Math.hypot(raw[0].x - raw.at(-1).x, raw[0].z - raw.at(-1).z);
-export const TRACK_LENGTH = length;
+export let TRACK_LENGTH = length;
 // Exact sampled control indices (the first pass records before the preceding edge).
 for (let i = 0; i < N; i++) controlDistances[i] = raw[i * SUB].s;
-export const SECTIONS = {
+export let SECTIONS = {
   antiStart: controlDistances[9],
   antiEnd: controlDistances[21],
   glideStart: controlDistances[21],
   glideEnd: controlDistances[22],
 };
-export const TRACK_SAMPLES = raw;
+export let TRACK_SAMPLES = raw;
 function indexAt(s) {
   let lo = 0,
     hi = raw.length - 1;
@@ -89,14 +96,28 @@ function indexAt(s) {
   return lo;
 }
 export function trackAt(distance) {
+  if (activeSurfaceTrack) return activeSurfaceTrack.at(distance);
   const s = wrap(distance, length),
     i = indexAt(s),
     a = raw[i],
     b = raw[(i + 1) % raw.length];
   const span = (i === raw.length - 1 ? length : b.s) - a.s,
     t = (s - a.s) / span;
-  const tx = (b.x - a.x) / span,
-    tz = (b.z - a.z) / span;
+  // Continuous tangent prevents the banked ribbon (and kart/camera normal)
+  // jumping at each sampled segment. Centreline positions remain unchanged.
+  const prev = raw[(i + raw.length - 1) % raw.length],
+    next = raw[(i + 2) % raw.length];
+  const ax = b.x - prev.x,
+    az = b.z - prev.z,
+    bx = next.x - a.x,
+    bz = next.z - a.z,
+    al = Math.hypot(ax, az),
+    bl = Math.hypot(bx, bz);
+  const vx = (ax / al) * (1 - t) + (bx / bl) * t,
+    vz = (az / al) * (1 - t) + (bz / bl) * t,
+    vl = Math.hypot(vx, vz),
+    tx = vx / vl,
+    tz = vz / vl;
   const control = i === raw.length - 1 ? N : b.control;
   const c = a.control + t * (control - a.control);
   const anti = s >= SECTIONS.antiStart && s < SECTIONS.antiEnd;
@@ -127,6 +148,7 @@ export function trackAt(distance) {
   };
 }
 export function surfaceAt(s, lateral = 0) {
+  if (activeSurfaceTrack) return activeSurfaceTrack.surface(s, lateral);
   const p = trackAt(s);
   return {
     ...p,
@@ -137,6 +159,7 @@ export function surfaceAt(s, lateral = 0) {
 }
 /** Local projection avoids jumping between crossing roads. Global only at spawn. */
 export function project(x, z, previousS = null) {
+  if (activeSurfaceTrack) return activeSurfaceTrack.project({x,y:0,z}, previousS, true);
   let best = null;
   const center = previousS === null ? 0 : indexAt(wrap(previousS, length));
   const count = previousS === null ? raw.length : 85;
@@ -162,13 +185,13 @@ export function project(x, z, previousS = null) {
   }
   return best;
 }
-export const BOOST_PADS = [5.05, 5.8, 6.55, 24.2, 25, 25.8].map((c) => ({
+export let BOOST_PADS = [5.05, 5.8, 6.55, 24.2, 25, 25.8].map((c) => ({
   s: raw[Math.floor(c * SUB)].s,
   lateral: c < 10 ? -7 : 7,
   width: 4,
   length: 7,
 }));
-export const ITEM_ROWS = [3.5, 11.7, 20.4].flatMap((c) =>
+export let ITEM_ROWS = [3.5, 11.7, 20.4].flatMap((c) =>
   [-6, 0, 6].map((lateral) => ({ s: raw[Math.floor(c * SUB)].s, lateral })),
 );
 export const COIN_SPOTS = [
@@ -179,3 +202,19 @@ export const COIN_SPOTS = [
     lateral: i % 2 ? 6 : -3,
   })),
 );
+
+/** Activate only after a complete local course asset has loaded. */
+export let activeSurfaceTrack = null;
+export function useSourceTrack(data) {
+  const track = createSurfaceTrack(data);
+  activeSurfaceTrack = track;
+  TRACK_LENGTH = track.length;
+  ROAD_HALF = track.roadHalf;
+  WALL_HALF = track.wallHalf;
+  TRACK_SAMPLES = track.samples;
+  SECTIONS = track.sections;
+  BOOST_PADS = track.boostPads;
+  ITEM_ROWS = track.itemRows;
+  COIN_SPOTS.splice(0, COIN_SPOTS.length, ...track.coinSpots);
+  return track;
+}

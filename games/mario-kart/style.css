@@ -640,3 +640,197 @@ h2 {
     display: none;
   }
 }
+
+/* Gameplay composition: the race fills the frame; utility chrome stays quiet. */
+#fullscreen {
+  color: #d5e7f2;
+  background: #142b5277;
+  border: 1px solid #93b7d64d;
+  padding: 10px 13px;
+  border-radius: 20px;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.racing #race-brand,
+.racing #speed,
+.racing #bottomline {
+  display: none;
+}
+.racing #topline {
+  opacity: 0.22;
+  transition: opacity 0.2s;
+}
+.racing #topline:hover,
+.racing #topline:focus-within {
+  opacity: 1;
+}
+.capture #topline,
+.capture #bottomline {
+  display: none;
+}
+#item-frame {
+  left: 28px;
+  top: 27px;
+  width: 104px;
+  height: 104px;
+  border: 4px solid #e2e8ee;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #33577b, #0a1530 75%);
+  box-shadow:
+    0 3px 0 #121a2f,
+    0 0 0 2px #202b45;
+}
+#item-frame.empty {
+  opacity: 0;
+}
+#item-icon {
+  width: 69px;
+  height: 69px;
+}
+#item-caption,
+#item-frame .keycap {
+  display: none;
+}
+#lap-panel {
+  left: 30px;
+  bottom: 32px;
+  gap: 9px;
+  font-size: 28px;
+  text-shadow: 1px 3px 0 #101725;
+}
+#lap small {
+  font-size: 22px;
+}
+#coin-icon {
+  font-size: 27px;
+}
+#lap-panel i {
+  height: 25px;
+  margin: 0 7px;
+  background: #ffffff90;
+}
+.flag {
+  font-size: 29px;
+  transform: skew(-10deg);
+}
+#position {
+  bottom: 23px;
+  right: 38px;
+  font-size: 98px;
+  letter-spacing: -7px;
+  color: #ffe9a0;
+  -webkit-text-stroke: 2px #75461c;
+  text-shadow: 4px 5px 0 #142032;
+}
+#position sup {
+  font-size: 40px;
+}
+#minimap {
+  bottom: 145px;
+  right: 23px;
+  width: 175px;
+  height: 154px;
+  opacity: 0.87;
+}
+#drift-meter {
+  bottom: 35px;
+  opacity: 0.7;
+  width: 100px;
+  height: 3px;
+}
+#drift-label {
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+#notice {
+  top: 24%;
+  font-size: clamp(27px, 3.2vw, 48px);
+}
+
+/* Segmented counters and embossed coin remain sharp at phone-video size. */
+.race-numerals {
+  display: block;
+  fill: #fff;
+  filter: drop-shadow(1px 2px 1px #000a);
+}
+#coin-icon {
+  display: block;
+  width: 25px;
+  height: 31px;
+  border: 2px solid #ffe973;
+  border-radius: 50%;
+  background: linear-gradient(
+    105deg,
+    #ffe979 12%,
+    #f7cb31 45%,
+    #d8a211 78%,
+    #ffe888
+  );
+  box-shadow:
+    inset 2px 0 0 #b88a10,
+    inset -2px 0 0 #fff1a0,
+    1px 2px 0 #32250c;
+  transform: rotate(8deg);
+  position: relative;
+}
+#coin-icon::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: #e7ae16;
+  box-shadow:
+    -1px 0 0 #fff38b,
+    1px 0 0 #9b730c;
+}
+#lap-panel {
+  gap: 7px;
+}
+#lap-panel i {
+  display: none;
+}
+.flag {
+  width: 27px;
+  height: 32px;
+  margin-left: 13px;
+}
+.flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(1px 2px 1px #0009);
+}
+
+/* Capture keeps lap/finish information while the effects explain ordinary events. */
+.capture #notice[data-essential="false"] {
+  display: none;
+}
+
+/* Native race overlay comparison, current demo iteration. */
+.race-lettering { display:block; width:100%; height:100%; overflow:visible; }
+#speed-lines { background:none; mask-image:radial-gradient(ellipse,transparent 35%,#000 77%); }
+#speed-lines svg { width:100%; height:100%; }
+#position { display:flex; align-items:flex-end; gap:0; width:128px; height:115px; transform:none; }
+#position>.race-lettering { width:96px; flex:none; }
+#position sup { margin:0 0 17px -10px; font-size:33px; line-height:1; letter-spacing:-2px; color:#ffe3a0; -webkit-text-stroke:1px #fff4d5; text-shadow:2px 3px 0 #2d2923; }
+#position[data-rank="2"] sup {color:#d9edf3;}
+#position[data-rank="3"] sup {color:#eccc9e;}
+#countdown { inset:0; transform:none; }
+#lamps { position:absolute; left:19%; top:13%; gap:8px; padding:8px 12px; border-radius:7px; border:3px solid #242823; background:#30342b; box-shadow:3px 5px 0 #1118; transform:rotate(5deg); }
+#lamps i { width:26px; height:26px; background:#331f1a; border-color:#131a18; }
+#count-number { position:absolute; top:34%; left:50%; width:300px; height:125px; transform:translateX(-50%); font-size:34px; }
+#notice[data-kind="finish"] { top:39%; width:min(62vw,650px); height:145px; transform:translate(-50%,-50%); }
+#notice[data-kind="lap"],#notice[data-kind="finalLap"] {top:18%;left:auto;right:8%;transform:rotate(4deg);}
+.lap-sign {width:150px;padding:12px 18px;background:linear-gradient(#267839,#19432c);border:5px solid #ced5ae;border-radius:8px;box-shadow:3px 5px 0 #15241c99;}
+.lap-sign .race-numerals {width:100%;height:64px;}
+#item-frame {background:radial-gradient(circle at 40% 25%,#64737b,#283039 72%);border-color:#b0b4ac;box-shadow:0 0 0 2px #51584e,0 0 0 5px #1d231cad,inset 0 0 0 3px #737870;transition:opacity .14s;}
+#item-icon {width:80px;height:80px;}
+#notice[data-kind="lap"],#notice[data-kind="finalLap"] {left:21%;right:auto;top:18%;transform:rotate(-5deg);}
+.lap-sign {width:150px;height:128px;padding:0;border:0;border-radius:0;box-shadow:none;background:none;}
+.lap-sign>svg {width:100%;height:100%;filter:drop-shadow(0 3px 3px #0007);}
+#item-icon img {display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(1px 3px 1px #0008);}
+#notice[data-kind="finish"]::after {content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#fff 0,#fffcccbb 7%,#ffffff00 50%);mix-blend-mode:screen;pointer-events:none;animation:finish-shine .5s ease-out both;}
+@keyframes finish-shine {from{opacity:0;transform:scale(.2)}35%{opacity:1}to{opacity:0;transform:scale(1.5)}}

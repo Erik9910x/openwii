@@ -20,8 +20,21 @@
       </div>
       <div id="race-brand"><b>MARIOKART</b><span>STADIUM</span></div>
       <div id="lap-panel">
-        <span id="coin-icon">●</span><b id="coins">00</b><i></i
-        ><span class="flag">⚑</span><b id="lap">1 <small>/ 3</small></b>
+        <span id="coin-icon" aria-label="Coins"></span><b id="coins">00</b
+        ><i></i
+        ><span class="flag" aria-label="Lap"
+          ><svg viewBox="0 0 28 32" aria-hidden="true">
+            <path
+              d="M3 30V3h22v18H4"
+              fill="none"
+              stroke="white"
+              stroke-width="2.8"
+            />
+            <path
+              d="M5 4h6v5H5m12-5h6v5h-6M11 9h6v5h-6M5 14h6v5H5m12-5h6v5h-6"
+              fill="white"
+            /></svg></span
+        ><b id="lap">1 <small>/ 3</small></b>
       </div>
       <div id="position">8<sup>th</sup></div>
       <canvas id="minimap" width="250" height="220"></canvas>
@@ -42,6 +55,8 @@
     <div id="topline">
       <a href="/" id="home">⌂ <span>CHANNELS</span></a
       ><span id="connection">KEYBOARD READY</span
+      ><button id="fullscreen" aria-label="Toggle fullscreen">
+        ⛶ FULLSCREEN</button
       ><button id="mute" aria-label="Toggle audio">♪ SOUND ON</button>
     </div>
     <div id="intro">
@@ -68,7 +83,7 @@
     </div>
     <div id="bottomline">
       <span id="wheel-status">Z gas · X brake · Shift drift · Space item</span
-      ><span>R / − recenter · I invert wheel · Esc pause</span>
+      ><span>F fullscreen · C clean view · Esc pause</span>
     </div>
     <div id="pause" class="scrim" hidden>
       <div class="pause-panel">

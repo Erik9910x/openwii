@@ -1,5 +1,10 @@
+import {sourceJumpLaunch} from "./source-jump.js";
+import { stepSourceGlide } from './glide.js';
+import { kartContact } from "./kart-contact.js";
+import { kartWallLimits } from './kart-wall.js';
 /** Mario Kart rules. No browser or renderer dependencies. Fixed-step, seeded. */
 import {
+  activeSurfaceTrack,
   TRACK_LENGTH as L,
   ROAD_HALF,
   WALL_HALF,
@@ -203,6 +208,7 @@ export class Race {
       }
       if (this.time + 1e-9 < 3) return;
       this.state = "racing";
+      this.count = 0;
       this.emit("go");
       const held =
         this.player.gasDownAt === null ? 0 : 3 - this.player.gasDownAt;
@@ -250,7 +256,7 @@ export class Race {
       lane = Math.sin(this.raceTime * 0.19 + r.id * 2.1) * 3.5;
     const p = surfaceAt(r.s + lead, lane),
       desired = Math.atan2(p.x - r.x, -(p.z - r.z));
-    const error = angle(desired - r.heading),
+    const error = activeSurfaceTrack ? activeSurfaceTrack.steeringError(r, p) : angle(desired - r.heading),
       steer = clamp(error * 2.8, -1, 1);
     r.itemDelay -= FIXED_DT;
     return {
@@ -269,6 +275,8 @@ export class Race {
       steer: Number.isFinite(raw.steer) ? clamp(raw.steer, -1, 1) : 0,
     };
     for (const k of [
+      "landing",
+      "jumpCooldown",
       "hop",
       "boost",
       "star",
@@ -277,7 +285,8 @@ export class Race {
       "wallCooldown",
       "bumpCooldown",
     ])
-      r[k] = Math.max(0, r[k] - dt);
+      r[k] = Math.max(0, (r[k] || 0) - dt);
+    if(r.itemUse) r.itemUse.age += dt;
     if (r.roulette > 0) {
       r.roulette -= dt;
       if (r.roulette <= 0) {
@@ -328,7 +337,7 @@ export class Race {
         this.emit("drift", r, { tier });
       }
     }
-    const offroad = Math.abs(r.lateral) > ROAD_HALF + 0.2 && !r.gliding;
+    const offroad = !r.gliding && (activeSurfaceTrack ? !activeSurfaceTrack.onRoad(r.s,r.lateral,r) : Math.abs(r.lateral)>ROAD_HALF+.2);
     let max = topSpeed(r.coins);
     if (auto) {
       const gap = this.player.progress - r.progress;
@@ -350,27 +359,43 @@ export class Race {
     // No sensor angular integration, yaw momentum or centrifugal term: zero wheel
     // means exactly straight in world space. Turn rate is bounded at every speed.
     const turn = (r.drift ? r.drift * 0.12 + r.steer * 0.92 : r.steer) * 1.48;
-    r.heading = angle(
-      r.heading +
-        turn * clamp(r.speed / 20, -0.5, 1) * dt * (r.gliding ? 0.52 : 1),
-    );
+    const turnAngle = turn * clamp(r.speed / 20, -0.5, 1) * dt * (r.gliding ? 0.52 : 1);
     const previousS = r.s,
       previousProgress = r.progress;
-    r.x += Math.sin(r.heading) * r.speed * dt;
-    r.z -= Math.cos(r.heading) * r.speed * dt;
-    const near = project(r.x, r.z, r.s);
+    if(activeSurfaceTrack?.hasRoadMesh){const launch=sourceJumpLaunch(r,dt);if(launch){r.jump=launch;r.drift=0;r.charge=0;this.emit('rampJump',r);}}
+    let near;
+    if (activeSurfaceTrack && !r.gliding && !r.jump) {
+      near = activeSurfaceTrack.advance(r, turnAngle, r.speed * dt);
+      r.x = near.x; r.y = near.y; r.z = near.z;
+      r.heading = near.heading;
+      r.surfaceForward = near.surfaceForward;
+      r.surfaceNormal = near.surfaceNormal;
+      r.verticalSpeedRatio = near.verticalSpeedRatio;
+    } else {
+      r.heading = angle(r.heading + turnAngle);
+      r.x += Math.sin(r.heading) * r.speed * dt;
+      r.z -= Math.cos(r.heading) * r.speed * dt;
+      near = project(r.x, r.z, r.s);
+    }
     r.s = near.s;
     r.lateral = near.lateral;
-    if (Math.abs(r.lateral) > WALL_HALF) {
-      const p = surfaceAt(r.s, Math.sign(r.lateral) * WALL_HALF);
+    const walls=activeSurfaceTrack?.hasRoadMesh&&!r.gliding
+      ?kartWallLimits(activeSurfaceTrack,r,this.time)
+      :activeSurfaceTrack?activeSurfaceTrack.wallBounds(r.s,r.lateral):{min:-WALL_HALF,max:WALL_HALF};
+    if (!r.jump && (r.lateral<walls.min||r.lateral>walls.max)) {
+      const side=r.lateral<walls.min?-1:1,edge=clamp(r.lateral,walls.min,walls.max),p = activeSurfaceTrack&&!r.gliding?activeSurfaceTrack.constrainLateral(r,edge):surfaceAt(r.s,edge);
       r.x = p.x;
       r.z = p.z;
-      r.lateral = Math.sign(r.lateral) * WALL_HALF;
+      if(activeSurfaceTrack&&!r.gliding){r.y=p.y;r.surfaceNormal=p.normal;}
+      r.lateral = edge;
       // Wall glancing is a slide, never a forced 180-degree bounce.
-      const tangent = trackAt(r.s).heading,
-        error = angle(r.heading - tangent);
-      if (Math.sign(error) === Math.sign(r.lateral)) {
-        r.heading = angle(tangent + error * 0.6);
+      const path = trackAt(r.s), tangent = path.heading,
+        error = activeSurfaceTrack && !r.gliding
+          ? -activeSurfaceTrack.steeringError(r, {x:r.x+path.forward.x,y:r.y+path.forward.y,z:r.z+path.forward.z})
+          : angle(r.heading - tangent);
+      if (Math.sign(error) === side && Math.abs(error)>.01) {
+        if(activeSurfaceTrack&&!r.gliding)Object.assign(r,activeSurfaceTrack.turn(r,-error*.4));
+        else r.heading=angle(tangent+error*.6);
         r.speed *= 0.86;
       }
       if (r.wallCooldown <= 0) {
@@ -423,30 +448,52 @@ export class Race {
       r.speed = Math.max(r.speed, 26);
       r.boost = Math.max(r.boost, 0.5);
       r.gliding = true;
+      r.surfaceForward = null;
+      r.surfaceNormal = null;
       r.flight = 0;
       r.flightY = surfaceAt(SECTIONS.glideStart, r.lateral).y + 1;
-      r.flightV = 6;
+      r.flightV = activeSurfaceTrack ? Math.min(6, (r.verticalSpeedRatio || 0) * r.speed + 6) : 6;
       r.anti = false;
       this.emit("glider", r);
     }
     if (r.gliding) {
       r.flight += dt;
-      r.flightV -= 9 * dt;
-      r.flightY += r.flightV * dt;
+      if (activeSurfaceTrack) {
+        const flight = stepSourceGlide(r.flightY, r.flightV, r.speed, dt);
+        r.flightY = flight.height;
+        r.flightV = flight.velocity;
+      } else {
+        r.flightV -= 9 * dt;
+        r.flightY += r.flightV * dt;
+      }
       r.y = r.flightY;
-      const beyond = r.s >= SECTIONS.glideEnd || r.s < SECTIONS.antiStart;
-      if ((beyond && r.flightY <= p.y + 1) || r.flight > 6) {
+      const beyond = r.s >= SECTIONS.glideEnd || r.s < SECTIONS.antiStart, ground=activeSurfaceTrack?surfaceAt(r.s,r.lateral):p;
+      if ((beyond && r.flightY <= ground.y + 1) || r.flight > (activeSurfaceTrack ? 10 : 6)) {
         r.gliding = false;
-        r.y = p.y;
+        r.surfaceForward = null;
+        r.y = ground.y;
+        if(activeSurfaceTrack){const support=activeSurfaceTrack.support(r,ground.normal)||ground;r.x=support.x;r.y=support.y;r.z=support.z;r.surfaceNormal=support.normal;}
         r.boost = Math.max(r.boost, 0.3);
         this.emit("land", r);
       }
-    } else r.y = surfaceAt(r.s, r.lateral).y;
+    } else if(!activeSurfaceTrack) r.y = surfaceAt(r.s, r.lateral).y;
+    if(r.jump){
+      const j=r.jump;j.age+=dt;j.velocity-=18*dt;r.y+=j.velocity*dt;
+      const ground=activeSurfaceTrack.support(r,{x:0,y:1,z:0})||surfaceAt(r.s,r.lateral);
+      if(j.velocity<0 && r.y<=ground.y){
+        r.y=ground.y;r.surfaceNormal=ground.normal;r.surfaceForward=null;r.jump=null;r.jumpCooldown=.35;
+        r.landing=.24;r.boost=Math.max(r.boost,.55);this.emit('land',r);
+      }
+    }
+    if(activeSurfaceTrack&&!r.gliding&&!r.jump&&activeSurfaceTrack.onBoost(r.s,r.lateral,r)){
+      if(r.boost<.2)this.emit('boost',r);
+      r.boost=Math.max(r.boost,.65);
+    }
     for (const pad of BOOST_PADS)
       if (
         Math.abs(wrap(r.s - pad.s + L / 2, L) - L / 2) < pad.length / 2 &&
         Math.abs(r.lateral - pad.lateral) < pad.width / 2 &&
-        !r.gliding
+        !r.gliding && !r.jump
       ) {
         if (r.boost < 0.2) this.emit("boost", r);
         r.boost = Math.max(r.boost, 0.65);
@@ -483,6 +530,7 @@ export class Race {
       return false;
     const type = r.item;
     r.item = null;
+    r.itemUse = {type,age:0};
     r.itemDelay = 2 + this.rng() * 3;
     this.emit("useItem", r, { item: type });
     if (type === "mushroom") r.boost = Math.max(r.boost, 2.3);
@@ -537,37 +585,57 @@ export class Race {
     return true;
   }
   collisions(dt) {
-    for (let i = 0; i < 8; i++)
-      for (let j = i + 1; j < 8; j++) {
-        const a = this.racers[i],
-          b = this.racers[j],
-          dx = b.x - a.x,
-          dz = b.z - a.z,
-          d = Math.hypot(dx, dz);
-        if (
-          d >= 2.2 ||
-          Math.abs(a.y - b.y) > 2 ||
-          a.finishTime !== null ||
-          b.finishTime !== null
-        )
-          continue;
-        const nx = d > 0.01 ? dx / d : 1,
-          nz = d > 0.01 ? dz / d : 0,
-          push = (2.2 - d) * 0.5;
-        a.x -= nx * push;
-        a.z -= nz * push;
-        b.x += nx * push;
-        b.z += nz * push;
-        if (a.star > 0) this.hit(b, "star");
-        if (b.star > 0) this.hit(a, "star");
-        if (a.anti && b.anti && a.bumpCooldown <= 0 && b.bumpCooldown <= 0) {
-          a.boost = Math.max(a.boost, 0.65);
-          b.boost = Math.max(b.boost, 0.65);
-          a.bumpCooldown = b.bumpCooldown = 1;
-          this.emit("bump", a);
-          this.emit("bump", b);
+    const touched = new Set();
+    // Several passes resolve a pack together: a later pair must not leave an
+    // earlier pair interpenetrating. Steering angles and throttle stay intact.
+    for (let pass = 0; pass < 6; pass++) {
+      let contacts = 0;
+      for (let i = 0; i < this.racers.length; i++)
+        for (let j = i + 1; j < this.racers.length; j++) {
+          const a = this.racers[i],
+            b = this.racers[j];
+          if (a.finishTime !== null || b.finishTime !== null) continue;
+          const contact = kartContact(a, b, this.time);
+          if (!contact) continue;
+          contacts++;
+          for (const [r, sign] of [
+            [a, -1],
+            [b, 1],
+          ]) {
+            r.x += sign * contact.x * 0.5;
+            r.z += sign * contact.z * 0.5;
+            if (activeSurfaceTrack && !r.gliding) r.y += sign * (contact.y || 0) * .5;
+            const near = activeSurfaceTrack && !r.gliding ? activeSurfaceTrack.project(r, r.s) : project(r.x, r.z, r.s);
+            const walls=activeSurfaceTrack?.hasRoadMesh&&!r.gliding
+              ?kartWallLimits(activeSurfaceTrack,{...r,s:near.s,lateral:near.lateral},this.time)
+              :activeSurfaceTrack?activeSurfaceTrack.wallBounds(near.s,near.lateral):{min:-WALL_HALF,max:WALL_HALF};
+            const lateral = clamp(near.lateral,walls.min,walls.max);
+            let p = surfaceAt(near.s, lateral);
+            if(activeSurfaceTrack&&!r.gliding)p=activeSurfaceTrack.constrainLateral({...r,s:near.s,lateral:near.lateral},lateral);
+            if (activeSurfaceTrack || lateral !== near.lateral) {
+              r.x = p.x;
+              r.z = p.z;
+            }
+            r.lateral = lateral;
+            if (!r.gliding){r.y=p.y;if(activeSurfaceTrack)r.surfaceNormal=p.normal;}
+            // Keep s/progress together: the next movement projection accounts
+            // for this physical displacement when advancing checkpoint gates.
+          }
+          const pair = i * this.racers.length + j;
+          if (touched.has(pair)) continue;
+          touched.add(pair);
+          if (a.star > 0) this.hit(b, "star");
+          if (b.star > 0) this.hit(a, "star");
+          if (a.anti && b.anti && a.bumpCooldown <= 0 && b.bumpCooldown <= 0) {
+            a.boost = Math.max(a.boost, 0.65);
+            b.boost = Math.max(b.boost, 0.65);
+            a.bumpCooldown = b.bumpCooldown = 1;
+            this.emit("bump", a);
+            this.emit("bump", b);
+          }
         }
-      }
+      if (!contacts) break;
+    }
   }
   updateObjects(dt, oldProgress) {
     for (const o of this.objects) {
@@ -577,13 +645,23 @@ export class Race {
       const target = this.racers.find(
         (r) => r.id === o.target && r.finishTime === null,
       );
+      if(o.type==='blue' && o.attack!=null){
+        if(!target){o.life=0;continue;}
+        o.attack+=dt;o.s=target.s;o.lateral=target.lateral;
+        if(o.attack>=.85){
+          for(const k of this.racers)if(Math.abs(wrap(k.s-target.s+L/2,L)-L/2)<7)this.hit(k,'blue');
+          o.life=0;
+        }
+        continue;
+      }
       if (target && ["red", "blue"].includes(o.type)) {
         o.lateral += (target.lateral - o.lateral) * (1 - Math.exp(-dt * 7));
       }
       o.s = wrap(o.s + o.speed * dt, L);
       o.lateral += o.lateralVelocity * dt;
-      if (Math.abs(o.lateral) > WALL_HALF - 1) {
-        o.lateral = clamp(o.lateral, -WALL_HALF + 1, WALL_HALF - 1);
+      const walls=activeSurfaceTrack?activeSurfaceTrack.wallBounds(o.s,o.lateral):{min:-WALL_HALF,max:WALL_HALF};
+      if (o.lateral<walls.min+1||o.lateral>walls.max-1) {
+        o.lateral = clamp(o.lateral,walls.min+1,walls.max-1);
         o.lateralVelocity *= -1;
       }
       for (const r of this.racers) {
@@ -598,13 +676,10 @@ export class Race {
         if (
           along &&
           Math.abs(o.lateral - r.lateral) < 2.3 &&
-          (!r.gliding || o.type === "blue")
+          ((!r.gliding && !r.jump) || o.type === "blue")
         ) {
-          if (o.type === "blue") {
-            for (const k of this.racers)
-              if (Math.abs(k.progress - r.progress) < 7) this.hit(k, "blue");
-          } else this.hit(r, o.type);
-          o.life = 0;
+          if (o.type === "blue") {o.attack=0;o.s=r.s;o.lateral=r.lateral;}
+          else {this.hit(r,o.type);o.life=0;}
           break;
         }
       }
