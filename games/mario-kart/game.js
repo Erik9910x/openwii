@@ -1,3 +1,5 @@
+import {itemRoulette} from "./item-roulette.js";
+import {raceEffects} from "./race-effects.js";
 import {itemPortraits} from "./item-portraits.js";
 import {raceLettering,lapBoard} from "./hud-lettering.js";
 import {boostScreen} from "./boost-screen.js";
@@ -63,6 +65,7 @@ const $ = (id) => document.getElementById(id),
   canvas = $("game"),
   V = THREE.Vector3;
 const renderedItemIcons=itemPortraits();
+const updateItemReel=itemRoulette($("item-icon"),{...ITEM_ICONS,...renderedItemIcons},ITEMS);
 const updateBoostScreen=boostScreen($("speed-lines"));
 let boostFeedback={strength:0,kick:0};
 window.addEventListener("error", (e) => {
@@ -81,6 +84,7 @@ renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.toneMappingExposure = 1.05;
 const scene = new THREE.Scene();
+const effects=raceEffects(scene,seeded(8703));
 scene.background = new THREE.Color("#081325");
 scene.fog = new THREE.FogExp2("#111c30", 0.0011);
 const camera = new THREE.PerspectiveCamera(
@@ -92,11 +96,11 @@ const camera = new THREE.PerspectiveCamera(
 const pmrem = new THREE.PMREMGenerator(renderer);
 const room = new RoomEnvironment();
 scene.environment = pmrem.fromScene(room, 0.04).texture;
-scene.environmentIntensity = 0.32;
+scene.environmentIntensity = 0.28;
 room.dispose();
 pmrem.dispose();
-scene.add(new THREE.HemisphereLight("#a5c8f4", "#34384a", 0.36));
-const key = new THREE.DirectionalLight("#fff3dd", 1.9);
+scene.add(new THREE.HemisphereLight("#a5c8f4", "#34384a", 0.29));
+const key = new THREE.DirectionalLight("#fff3dd", 1.7);
 key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048);
 Object.assign(key.shadow.camera, {
@@ -255,7 +259,6 @@ let selected = "mario",
   hitUntil = 0,
   renderCount = 0,
   lastFrame = performance.now(),
-  itemIconKey = "",
   resultsShown = false;
 const audio = new KartAudio(),
   wheel = new WheelInput({
@@ -409,6 +412,11 @@ function sendProfile() {
 }
 const profileTimer = setInterval(sendProfile, 850);
 function onEvent(e) {
+  if(e.type==='box' && race.boxes[e.box]){const b=race.boxes[e.box];effects.box(surfaceAt(b.s,b.lateral),race.time);}
+  if(e.type==='contact'){
+    burst(race.racers[e.racer],5,'#fff1b8');
+    if(e.racer===0)link.feedback({type:'rumble',pattern:[35],slot:0});
+  }
   if(e.type==='hit' && race?.racers[e.racer]){
     const r=race.racers[e.racer];burst(r,28,e.cause==='blue'?'#98dbff':'#fff0a0');
     if(e.cause==='blue'){
@@ -416,8 +424,8 @@ function onEvent(e) {
       ball.position.set(r.x,r.y+1,r.z);scene.add(ball);itemImpacts.push({mesh:ball,start:race.time});
     }
   }
+  audio.event(e, race);
   if (e.racer !== 0) return;
-  audio.event(e);
   if(e.type==='useItem'){$('item-frame').dataset.used=String(race.time);$('item-icon').animate([{transform:'scale(1)',opacity:1},{transform:'scale(1.3)',opacity:0}],{duration:150});}
   if(e.type==='itemReady')$('item-frame').animate([{filter:'brightness(2)',transform:'scale(1.15)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:250});
   const labels = {
@@ -450,11 +458,19 @@ function onEvent(e) {
     burst(race.player, 36, "#ffd755");
     link.feedback({ type: "rumble", pattern: [80, 40, 80], slot: 0 });
   }
-  if (["coin", "box"].includes(e.type))
-    burst(race.player, 10, e.type === "coin" ? "#ffdf46" : "#6bdbff");
+  if (e.type === "coin") burst(race.player, 10, "#ffdf46");
 }
-function begin() {
-  audio.unlock();
+let starting = false;
+async function begin() {
+  if (starting) return;
+  starting = true;
+  const button = $("start"), label = button.innerHTML;
+  button.disabled = true;
+  button.textContent = "LOADING…";
+  await audio.unlock();
+  starting = false;
+  button.disabled = false;
+  button.innerHTML = label;
   wheel.reset();
   captureUntil = performance.now() + 3000;
   race.start();
@@ -857,7 +873,7 @@ function draw(dt, now) {
     k.wasGliding = r.gliding;
     if (!r.gliding) k.launchOrientation = null;
     k.model.rotation.y = r.spin > 0 ? time * 15 : r.drift ? -r.drift * 0.25 : 0;
-    k.model.rotation.z = r.gliding ? -r.steer * 0.15 : -r.steer * 0.07;
+    k.model.rotation.z = (r.gliding ? -r.steer * 0.15 : -r.steer * 0.07) + Math.sin((r.contactAnimation||0)/.32*Math.PI*2)*(r.contactAnimation||0)*.35*(r.contactSide||.4);
     updateDriverLook(k, r, race.racers, paused ? 0 : dt, race.state === "racing");
     updateHeldItem(k.model, r, paused ? 0 : dt);
     updateBoostEffect(k.boostEffect,k.model,r.boost,time+i*.17);
@@ -889,36 +905,15 @@ function draw(dt, now) {
       k.shadow.quaternion.copy(k.root.quaternion);
       k.shadow.rotateX(-Math.PI / 2);
     } else k.shadow.rotation.set(-Math.PI / 2, 0, r.heading);
-    if (r.drift && r.speed > 10 && !paused) {
-      const color =
-        r.boost > 0
-          ? "#ffac33"
-          : ["#fff2bb", "#32cfff", "#ff9d2e", "#d785ff"][r.tier];
-      for (const side of [-1, 1])
-        for (let j = 0; j < Math.min(3, Math.ceil(dt * 120)); j++) {
-          const frame = activeSurfaceTrack && !r.gliding ? roadFrame(r.s,r.lateral,r.heading,r.surfaceForward,r.surfaceNormal) : {
-            forward:{x:Math.sin(r.heading),y:0,z:-Math.cos(r.heading)},
-            right:{x:Math.cos(r.heading),y:0,z:Math.sin(r.heading)},up:{x:0,y:1,z:0},
-          };
-          const f=frame.forward,n=frame.up,right=frame.right,lift=visualRng()*3;
-          particle(
-            r.x-f.x*1.1+right.x*side+n.x*.45,
-            r.y-f.y*1.1+right.y*side+n.y*.45,
-            r.z-f.z*1.1+right.z*side+n.z*.45,
-            -f.x*6+n.x*lift+(visualRng()-.5)*3,
-            -f.y*6+n.y*lift,
-            -f.z*6+n.z*lift+(visualRng()-.5)*3,
-            color,
-          );
-        }
-    }
+    effects.tire(r,roadFrame(r.s,r.lateral,r.heading,r.surfaceForward,r.surfaceNormal),paused?0:dt);
   }
+  effects.update(paused?0:dt,innerHeight);
   for (const [i, m] of coinMeshes.entries()) {
     m.visible = race.coins[i].respawn === 0 && m.getWorldPosition(basisX).distanceTo(camera.position) > 1.6;
     m.rotation.z = now * 0.003;
   }
   for (const [i, g] of boxMeshes.entries()) {
-    g.visible = race.boxes[i].respawn === 0 && g.getWorldPosition(basisX).distanceTo(camera.position) > 5.5;
+    g.visible = race.boxes[i].respawn === 0 && g.getWorldPosition(basisX).distanceTo(camera.position) > 1.2;
     g.rotation.y = now * 0.001;
     g.rotation.z = Math.sin(now * 0.001 + i) * 0.2;
   }
@@ -1004,9 +999,9 @@ function draw(dt, now) {
     lastFlightCamera = landingCamera = null;
   }
   if (race.state === "ready") {
-    const t = now * 0.000045;
+    const t = -p.heading - Math.PI*.31 + Math.sin(now*.00008)*.045;
     camTarget.set(p.x + Math.cos(t) * 7.6, p.y + 3.7, p.z + Math.sin(t) * 7.6);
-    cameraAimTarget.set(p.x, p.y + 1.3, p.z);
+    cameraAimTarget.set(p.x-Math.sin(t)*2.65, p.y + 1.3, p.z+Math.cos(t)*2.65);
     cameraUp.set(0, 1, 0);
   } else {
     camTarget.set(desired.eye.x, desired.eye.y, desired.eye.z);
@@ -1115,15 +1110,7 @@ function updateHUD() {
     Math.min(100, (Math.abs(p.speed) / 55) * 100) + "%";
   const recentlyUsed=!p.item && p.itemUse?.age<.16;
   $("item-frame").classList.toggle("empty", !p.item && p.roulette <= 0 && !recentlyUsed);
-  const item =
-    p.roulette > 0
-      ? ITEMS[Math.floor(race.time * 13) % ITEMS.length]
-      : p.item || (recentlyUsed?p.itemUse.type:"empty");
-  if (item !== itemIconKey) {
-    $("item-icon").innerHTML = (renderedItemIcons[item] || ITEM_ICONS[item]);
-    if(p.roulette>0){$('item-icon').getAnimations().forEach(a=>a.cancel());$('item-icon').animate([{translate:'0 -9px',opacity:.5},{translate:'0 0',opacity:1}],{duration:65});}
-    itemIconKey = item;
-  }
+  updateItemReel(race.time,p.roulette,p.item || (recentlyUsed?p.itemUse.type:null));
   $("item-caption").textContent =
     p.roulette > 0
       ? "ROULETTE"
@@ -1232,7 +1219,7 @@ function drawMap() {
 }
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min((now - lastFrame) / 1000, 0.1);
+  const dt = Math.max(0, Math.min((now - lastFrame) / 1000, 0.1));
   lastFrame = now;
   if (!debug.freeze && !paused) {
     const remote = wheel.read(now),
@@ -1291,6 +1278,7 @@ const debug = {
       frequency: audio.motor?.osc.frequency.value,
       state: audio.engine.ctx?.state,
       enabled: audio.engine.enabled,
+      samples: audio.original.state,
       overrides: [...audio.engine.overrides]
         .filter(([, buffer]) => buffer)
         .map(([name]) => name),
@@ -1356,6 +1344,8 @@ const debug = {
 };
 if (new URLSearchParams(location.search).get("evidence") === "1") {
   window.__kart = debug;
+  debug.audioStream = () => audio.original.capture?.stream;
+  debug.audioUpdate = () => audio.update(race);
   debug.place = (s, { lateral = 0, speed = 30, lap = 1 } = {}) => {
     const p = surfaceAt(s, lateral),
       r = race.player;
@@ -1446,6 +1436,7 @@ function controlDistancesFor() {
 }
 constructRace();
 syncPickupPools();
+audio.prepare();
 requestAnimationFrame(frame);
 window.addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);

@@ -113,9 +113,9 @@ export function createSurfaceTrack(data) {
     const f=frame(r.s,r.heading,r.lateral,r.surfaceForward,r.surfaceNormal),direction=unit(sub(sub(target,r),mul(f.up,dot(sub(target,r),f.up))));
     return Math.atan2(dot(direction,f.right),dot(direction,f.forward));
   }
-  function advance(r,turn,distance) {
+  function advance(r,turn,distance,lateralDistance=0) {
     const current=frame(r.s,r.heading,r.lateral,r.surfaceForward,r.surfaceNormal),direction=rotate(current.forward,current.up,-turn);
-    const destination=add(r,mul(direction,distance)),near=project(destination,r.s);
+    const destination=add(add(r,mul(direction,distance)),mul(current.right,lateralDistance)),near=project(destination,r.s);
     // Keep actual world-space travel. Reconstructing position from a nearest
     // polyline vertex erases forward movement in the outside corner's wedge.
     const next=(mesh&&mesh.sample(destination,current.up))||surface(near.s,near.lateral);

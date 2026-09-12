@@ -1,5 +1,7 @@
 import {sourceJumpLaunch} from "./source-jump.js";
 import { stepSourceGlide } from './glide.js';
+import { contactResponse } from "./contact-response.js";
+import { roadFrame } from "./visual-frame.js";
 import { kartContact } from "./kart-contact.js";
 import { kartWallLimits } from './kart-wall.js';
 /** Mario Kart rules. No browser or renderer dependencies. Fixed-step, seeded. */
@@ -55,6 +57,7 @@ export const EVENT_TYPES = [
   "finish",
   "results",
   "bump",
+  "contact",
 ];
 export function seeded(seed = 381) {
   return () => {
@@ -104,6 +107,9 @@ function makeRacer(character, i) {
     heading: p.heading,
     lateral: grid % 2 ? 3 : -3,
     speed: 0,
+    sideVelocity: 0,
+    contactCooldown: 0,
+    contactAnimation: 0,
     steer: 0,
     coins: 0,
     lap: 1,
@@ -284,8 +290,11 @@ export class Race {
       "invulnerable",
       "wallCooldown",
       "bumpCooldown",
+      "contactCooldown",
+      "contactAnimation",
     ])
       r[k] = Math.max(0, (r[k] || 0) - dt);
+    r.sideVelocity=(r.sideVelocity||0)*Math.exp(-dt*6);
     if(r.itemUse) r.itemUse.age += dt;
     if (r.roulette > 0) {
       r.roulette -= dt;
@@ -365,7 +374,7 @@ export class Race {
     if(activeSurfaceTrack?.hasRoadMesh){const launch=sourceJumpLaunch(r,dt);if(launch){r.jump=launch;r.drift=0;r.charge=0;this.emit('rampJump',r);}}
     let near;
     if (activeSurfaceTrack && !r.gliding && !r.jump) {
-      near = activeSurfaceTrack.advance(r, turnAngle, r.speed * dt);
+      near = activeSurfaceTrack.advance(r, turnAngle, r.speed * dt, r.sideVelocity * dt);
       r.x = near.x; r.y = near.y; r.z = near.z;
       r.heading = near.heading;
       r.surfaceForward = near.surfaceForward;
@@ -373,8 +382,8 @@ export class Race {
       r.verticalSpeedRatio = near.verticalSpeedRatio;
     } else {
       r.heading = angle(r.heading + turnAngle);
-      r.x += Math.sin(r.heading) * r.speed * dt;
-      r.z -= Math.cos(r.heading) * r.speed * dt;
+      r.x += (Math.sin(r.heading) * r.speed + (!r.gliding&&!r.jump?Math.cos(r.heading)*r.sideVelocity:0)) * dt;
+      r.z += (-Math.cos(r.heading) * r.speed + (!r.gliding&&!r.jump?Math.sin(r.heading)*r.sideVelocity:0)) * dt;
       near = project(r.x, r.z, r.s);
     }
     r.s = near.s;
@@ -514,7 +523,7 @@ export class Race {
         ) {
           b.respawn = 3;
           r.roulette = 1.65;
-          this.emit("box", r);
+          this.emit("box", r, {box: this.boxes.indexOf(b)});
         }
     }
     r.lastInput = input;
@@ -624,6 +633,14 @@ export class Race {
           const pair = i * this.racers.length + j;
           if (touched.has(pair)) continue;
           touched.add(pair);
+          if(!a.gliding&&!b.gliding){
+            const frame=r=>roadFrame(r.s,r.lateral,r.heading,r.surfaceForward,r.surfaceNormal);
+            const impact=contactResponse(a,b,frame(a),frame(b),contact);
+            if(impact>1.5)for(const r of [a,b])if(r.contactCooldown<=0){
+              r.contactAnimation=.32;r.contactCooldown=.3;
+              this.emit("contact",r,{impact});
+            }
+          }
           if (a.star > 0) this.hit(b, "star");
           if (b.star > 0) this.hit(a, "star");
           if (a.anti && b.anti && a.bumpCooldown <= 0 && b.bumpCooldown <= 0) {

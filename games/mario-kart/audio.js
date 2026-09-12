@@ -1,4 +1,5 @@
 import { AudioEngine } from "../../core/audio.js";
+import { SampledKartAudio } from "./sample-audio.js";
 import { EVENT_TYPES } from "./logic.js";
 export const AUDIO_SLOTS = [
   ...EVENT_TYPES.map((t) => "mk-" + t),
@@ -11,6 +12,7 @@ export function engineFrequency(speed) {
 export class KartAudio {
   constructor() {
     this.engine = new AudioEngine({ volume: 0.55 });
+    this.original = new SampledKartAudio(this.engine);
     this.motor = null;
     this.music = null;
     this.musicGain = null;
@@ -68,9 +70,14 @@ export class KartAudio {
         }
       });
   }
+  prepare() { return this.original.prepare(); }
   async unlock() {
     await this.engine.unlock();
     if (!this.engine.ctx) return;
+    if (await this.prepare()) {
+      this.engine.master.gain.setValueAtTime(this.engine.enabled ? this.engine.volume : 0, this.engine.ctx.currentTime);
+      return;
+    }
     this.stopped = false;
     this.engine.master.gain.setValueAtTime(
       this.engine.enabled ? this.engine.volume : 0,
@@ -113,10 +120,13 @@ export class KartAudio {
       });
     }
   }
-  event(e) {
+  event(e, race) {
+    if (race && this.original.event(e, race)) return;
+    if (e.racer !== 0) return;
     this.engine.play("mk-" + e.type, e);
   }
   update(race) {
+    if (this.original.ready) { this.original.update(race); return; }
     const ctx = this.engine.ctx;
     if (!ctx || !this.motor) return;
     const r = race.player,
@@ -166,6 +176,7 @@ export class KartAudio {
     }
   }
   stop() {
+    this.original.stop();
     this.stopped = true;
     if (this.music) {
       try {

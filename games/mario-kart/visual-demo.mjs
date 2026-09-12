@@ -1,3 +1,4 @@
+import {captureArgs,startAV,stopAV} from './review-av.mjs';
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 /** Review recording driven only by real keyboard events. Not a real phone demo. */
@@ -7,13 +8,14 @@ import assert from "node:assert/strict";
 const out = process.env.EVIDENCE_DIR || "games/mario-kart/evidence/visual-v2";
 await mkdir(out, { recursive: true });
 const record = process.env.RECORD !== "0";
+const recordAudio=process.env.RECORD_AUDIO==='1';let avActive=false;
 const driveWide=process.env.REVIEW_BOOST_LANES==='1';
 const traceCamera=process.env.REVIEW_CAMERA_TRACE==='1';
 let sourceCourse = process.env.SOURCE_COURSE === "1";
 const browser = await chromium.launch({
   channel: "chrome",
   headless: true,
-  args: ["--autoplay-policy=no-user-gesture-required"],
+  args: ["--autoplay-policy=no-user-gesture-required",...(recordAudio?captureArgs:[])],
 });
 let context, video;
 const loadedFiles = [];
@@ -31,13 +33,13 @@ const report = {
 try {
   context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
-    ...(record
+    ...(record && !recordAudio
       ? { recordVideo: { dir: out, size: { width: 1440, height: 900 } } }
       : {}),
   });
   const videoStarted=Date.now();
   const page = await context.newPage();
-  video = record ? page.video() : null;
+  video = record && !recordAudio ? page.video() : null;
   // Chrome's default inspector buffer can evict the 50 MB course response.
   // Capture that resource through our own explicitly sized CDP session.
   const network = await context.newCDPSession(page);
@@ -64,7 +66,7 @@ try {
     if (url.pathname === '/assets/mario-kart/stadium-source.glb') return;
     if (
       !/^\/(games\/mario-kart\/|assets\/mario-kart\/)/.test(url.pathname) ||
-      !/(\.(js|mjs|css|html|glb|png|webp|json)|\/)$/.test(url.pathname)
+      !/(\.(js|mjs|css|html|glb|png|svg|webp|json|wav|ogg)|\/)$/.test(url.pathname)
     )
       return;
     loadedFiles.push(
@@ -104,6 +106,7 @@ try {
     window.reviewThree = await import("three");
   });
   await page.keyboard.press("KeyC");
+  if(recordAudio){await page.waitForFunction(()=>__kart.audioState.samples.ready,null,{timeout:60000});report.avCapture=await startAV(page,out+"/race-with-audio.webm");avActive=true;}
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => __kart.race.state === "racing");
   report.videoRaceStartSeconds=(Date.now()-videoStarted)/1000;
@@ -252,6 +255,7 @@ try {
   report.maxClearanceCorrection = maxClearanceCorrection;
   report.seenAnti = seenAnti;
   report.seenGlide = seenGlide;
+  if(avActive){report.audio=await page.evaluate(()=>__kart.audioState.samples);await stopAV(page);avActive=false;}
   await Promise.all(loadedFiles);
   await context.close();
   assert.ok(report.standings?.length === 8);
@@ -275,6 +279,7 @@ try {
   throw error;
 } finally {
   await Promise.all(loadedFiles);
+  if (context && avActive) await stopAV(context.pages()[0]).catch(()=>{});
   if (context) await context.close().catch(() => {});
   if (video) await video.saveAs(out + "/keyboard-demo.webm");
   await writeFile(

@@ -802,3 +802,13 @@ Next concrete mismatch: native4:02 shows horizontal cyan anti-gravity wheels dur
 The user superseded the broad loop with five priorities and requested quota conservation. Parked pass61 wheel changes outside active runtime. Fixed actual close-CPU culling; added supported held/use/release/impact item animation; coordinated boost streaks and camera feedback; implemented a physical jump off measured source ramp lips; replaced race lettering, item art and lap display with closer native-style presentation. See DEMO-ITERATION.md and evidence/overnight/65a-demo-iteration/review-notes.md for exact evidence and approximations.
 
 Used targeted captures62a/b,63a/b,64a/b followed by ONE combined full race65a.204 tests passed,76 loaded files matched,8 finishers,59.623fps,3 finish-ramp launches/landings. Dense frame review and browser video playback accepted. Status: stop for Patrick review. No commits or pushes. The app’s older broad goal was already paused and has no exposed edit API; repository scope is authoritative for this iteration. Do not silently resume deferred broad work.
+
+
+## September 11 — second feedback round, pass67
+
+Implemented the new six-item scope: box shatter and larger scrolling inventory, native-inspired direct-start menu, night lighting contrast, exhaust/tire effects, chase framing, and contact momentum. Reference observations and limitations are in [pass67 notes](evidence/overnight/67-feedback-race/review-notes.md); [review page](evidence/overnight/67-feedback-race/review.html) includes focused and full recordings. 208 tests, 59.68 fps final race, eight finishers, 80 matching loaded files. Stop here for Patrick’s feedback. No commit or push performed.
+
+
+## September 12 — pass68 sound and effects (stop for review)
+
+Integrated 97 available original cues and refined box glass and drift sparks. [Audiovisual review](evidence/overnight/68-sound-box-drift/review.html) contains focused and complete-race recordings, measurements, source links and limitations. 208 tests and 11 focused browser checks pass; final race 60.00 FPS, eight finishers, 179 matching loaded files. Original isolated item cues remain replaceable placeholders; no upload is required to review this pass. Stop here. No commit, push or resumed broad goal.

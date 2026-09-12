@@ -77,9 +77,9 @@ export function chasePose(racer) {
       }
     : roadFrame(racer.s, racer.lateral, racer.heading, racer.surfaceForward, racer.surfaceNormal);
   const { up: n, forward: f } = frame;
-  // MK8-like composition: larger kart low in frame, road and landmarks ahead.
-  const back = racer.gliding ? 8.8 : 7.8,
-    height = racer.gliding ? 3.8 : 3.15;
+  // MK8-like composition: kart low in frame with room to read upcoming corners, road and landmarks ahead.
+  const back = racer.gliding ? 8.8 : 9.6,
+    height = racer.gliding ? 3.8 : 3.65;
   const eye = cameraClearance(
     {
       x: racer.x - f.x * back + n.x * height,
@@ -90,10 +90,11 @@ export function chasePose(racer) {
   );
   const ahead = surfaceAt(racer.s + 14, racer.lateral * 0.55);
   const follow = racer.gliding ? 0 : 0.45;
+  const aimHeight=racer.gliding?1.3:3.1;
   const aim = {
-    x: (racer.x + f.x * 12) * (1 - follow) + ahead.x * follow + n.x * 1.3,
-    y: (racer.y + f.y * 12) * (1 - follow) + ahead.y * follow + n.y * 1.3,
-    z: (racer.z + f.z * 12) * (1 - follow) + ahead.z * follow + n.z * 1.3,
+    x: (racer.x + f.x * 12) * (1 - follow) + ahead.x * follow + n.x * aimHeight,
+    y: (racer.y + f.y * 12) * (1 - follow) + ahead.y * follow + n.y * aimHeight,
+    z: (racer.z + f.z * 12) * (1 - follow) + ahead.z * follow + n.z * aimHeight,
   };
   const viewUp = norm({ x: n.x * 0.72, y: n.y * 0.72 + 0.28, z: n.z * 0.72 });
   return { eye, aim, up: viewUp };
