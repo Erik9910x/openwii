@@ -87,7 +87,7 @@ export class WheelInput {
   setButtons(buttons, now) {
     if (!buttons || typeof buttons !== "object") return;
     this.buttons = Object.fromEntries(
-      ["A", "B", "1", "2", "up"].map((k) => [k, buttons[k] === true]),
+      ["A", "B", "1", "2", "up", "down", "left", "right"].map((k) => [k, buttons[k] === true]),
     );
     this.lastButtonsAt = now;
   }
@@ -115,8 +115,8 @@ export class WheelInput {
       steer: live && this.armed ? this.value : 0,
       gas: !!b["2"],
       brake: !!b["1"],
-      drift: !!b.B,
-      item: !!b.up,
+      drift: !!b.A,
+      item: !!b.right,
       live,
       status: live ? this.status : "Wheel signal lost · keyboard available",
     };

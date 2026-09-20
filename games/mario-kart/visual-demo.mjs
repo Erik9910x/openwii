@@ -95,7 +95,7 @@ try {
     )
       report.errors.push(m.text());
   });
-  await page.goto("http://localhost:8080/games/mario-kart/?evidence=1" + (sourceCourse ? "&sourceCourse=1" : process.env.SOURCE_COURSE === "0" ? "&sourceCourse=0" : ""));
+  await page.goto((process.env.KART_URL || "http://localhost:8080") + "/games/mario-kart/?evidence=1" + (sourceCourse ? "&sourceCourse=1" : process.env.SOURCE_COURSE === "0" ? "&sourceCourse=0" : ""));
   await page.waitForFunction(() =>
     window.__kart?.karts.every((k) => k.source === "glb"),
   );
@@ -107,7 +107,7 @@ try {
   });
   await page.keyboard.press("KeyC");
   if(recordAudio){await page.waitForFunction(()=>__kart.audioState.samples.ready,null,{timeout:60000});report.avCapture=await startAV(page,out+"/race-with-audio.webm");avActive=true;}
-  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter"); await page.keyboard.press("Enter");
   await page.waitForFunction(() => __kart.race.state === "racing");
   report.videoRaceStartSeconds=(Date.now()-videoStarted)/1000;
   await page.keyboard.down("KeyZ");
@@ -255,7 +255,13 @@ try {
   report.maxClearanceCorrection = maxClearanceCorrection;
   report.seenAnti = seenAnti;
   report.seenGlide = seenGlide;
-  if(avActive){report.audio=await page.evaluate(()=>__kart.audioState.samples);await stopAV(page);avActive=false;}
+  if(avActive){
+    // Keep the finish fanfare and results entrance in the shareable recording.
+    if(await page.evaluate(()=>__kart.audioState.samples.ready))
+      await page.waitForFunction(()=>['win','lose'].includes(__kart.audioState.samples.music),null,{timeout:15000});
+    await page.waitForTimeout(1200);
+    report.audio=await page.evaluate(()=>__kart.audioState.samples);await stopAV(page);avActive=false;
+  }
   await Promise.all(loadedFiles);
   await context.close();
   assert.ok(report.standings?.length === 8);

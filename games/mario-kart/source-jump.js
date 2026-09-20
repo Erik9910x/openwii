@@ -15,7 +15,7 @@ export function sourceJumpLaunch(r,dt){
   if(Math.abs(r.y-h)>1.15)continue;
   const along=(r.x-lip.a.x)*lip.forward.x+(r.z-lip.a.z)*lip.forward.z,travel=(vx*lip.forward.x+vz*lip.forward.z)*dt;
   if(travel>0 && along < -.9 && along+travel>=-1.6){
-   return {age:0,velocity:Math.max(5.2,(r.surfaceForward?.y||0)*r.speed+3.5),launchY:r.y};
+   return {age:0,speed:r.speed,velocity:Math.max(5.2,(r.surfaceForward?.y||0)*r.speed+3.5),launchY:r.y};
   }
  }
  return null;

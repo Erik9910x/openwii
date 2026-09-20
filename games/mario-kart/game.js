@@ -60,10 +60,11 @@ import {
   disposeModel,
 } from "./models.js";
 import { buildWorld, canvasTexture } from "./world.js";
-import { ITEM_ICONS, portrait } from "./icons.js";
+import { ITEM_ICONS, portrait, loadSourcePortraits } from "./icons.js";
 const $ = (id) => document.getElementById(id),
   canvas = $("game"),
   V = THREE.Vector3;
+await loadSourcePortraits();
 const renderedItemIcons=itemPortraits();
 const updateItemReel=itemRoulette($("item-icon"),{...ITEM_ICONS,...renderedItemIcons},ITEMS);
 const updateBoostScreen=boostScreen($("speed-lines"));
@@ -253,13 +254,14 @@ for (const { mat, geos, cast } of staticGroups.values()) {
   geos.forEach((x) => x.dispose());
 }
 let selected = "mario",
+  selectedLaps = localStorage.getItem("openwii.kart.laps") === "1" ? 1 : 3,
   paused = false,
   race,
   noticeUntil = 0,
   hitUntil = 0,
   renderCount = 0,
   lastFrame = performance.now(),
-  resultsShown = false;
+  resultsShown = false, resultsPresentation = null;
 const audio = new KartAudio(),
   wheel = new WheelInput({
     invert: localStorage.getItem("openwii.chargeInvert2") === "1",
@@ -290,12 +292,14 @@ const shadowTexture = canvasTexture(64, 64, (ctx, w, h) => {
 function constructRace() {
   race = new Race({
     character: selected,
+    laps: selectedLaps,
     seed: new URLSearchParams(location.search).has("evidence")
       ? 42
       : Math.floor(performance.now()) % 100000,
     onEvent: onEvent,
   });
-  resultsShown = false;
+  resultsShown = false;resultsPresentation=null;
+  $('again').disabled=false;
   for (const k of karts) {
     k.disposed = true;
     scene.remove(k.root, k.shadow);
@@ -378,21 +382,22 @@ const link = new GameLink({
     const now = performance.now();
     wheel.command(cmd, now);
     if (cmd.type === "home") {
-      location.href = "/";
+      audio.ui('cancel').then(()=>setTimeout(()=>location.href="/",100));
       return;
     }
     if (cmd.type === "recentre" || cmd.type === "calibrate") {
       wheel.reset();
       captureUntil = now + 10000;
       if (race?.state === "racing")
-        pause("Level the wheel for a moment, then press A or Enter.");
+        pause("Level the wheel for a moment, then press 2 or Enter.");
     }
-    if (cmd.type === "button" && cmd.button === "A" && cmd.pressed !== false) {
-      audio.unlock();
-      confirm();
+    if (cmd.type === 'button' && cmd.pressed !== false) {
+      if (cmd.button === '2' && (paused || ['ready','results'].includes(race.state))) confirm();
+      if (race.state === 'ready') {
+        if (['left','right','up','down'].includes(cmd.button)) navigateDriver(cmd.menuDirection || cmd.button);
+        if (cmd.button === '1') cancelDriver();
+      } else if (cmd.button === 'right' && !paused) itemPulse = true;
     }
-    if (cmd.type === "button" && cmd.button === "up" && cmd.pressed !== false)
-      itemPulse = true;
   },
   onPresence: (p) => {
     $("connection").textContent = p.controller
@@ -460,14 +465,63 @@ function onEvent(e) {
   }
   if (e.type === "coin") burst(race.player, 10, "#ffdf46");
 }
-let starting = false;
+let starting = false, driverConfirmed = false;
+function setDriverConfirmed(value) {
+  driverConfirmed = value;
+  $('intro').classList.toggle('driver-confirmed',value);
+  document.querySelector('.intro-copy').textContent = value ? 'Choose race length · Turn your phone sideways' : 'Choose your driver';
+  $('start').innerHTML = value ? 'Start Race <span>② OK</span>' : 'Confirm Driver <span>② OK</span>';
+  $('menu-hint').textContent = value ? '← → Race length · ② Start Race · ① Change driver' : 'Crosspad to choose · ② Confirm driver';
+}
+function cancelDriver() {
+  if(driverConfirmed){setDriverConfirmed(false);audio.ui('cancel');}
+}
+function chooseDriver(index) {
+  if (race.state !== 'ready' || starting) return;
+  const c=CHARACTERS[(index+CHARACTERS.length)%CHARACTERS.length];
+  selected=c.id;setDriverConfirmed(false);
+  document.querySelectorAll('.character').forEach((el,i)=>{
+    el.classList.toggle('selected',CHARACTERS[i].id===selected);
+    el.setAttribute('aria-pressed',String(CHARACTERS[i].id===selected));
+  });
+  $('chosen').textContent=c.name;
+  constructRace();
+  audio.ui('cursor');
+}
+function selectLaps(laps) {
+  if (race.state !== 'ready' || starting) return;
+  selectedLaps = laps === 1 ? 1 : 3;
+  race.laps = selectedLaps;
+  localStorage.setItem('openwii.kart.laps', String(selectedLaps));
+  syncLapOptions();
+  audio.ui('cursor');
+}
+function syncLapOptions() {
+  document.querySelectorAll('[data-laps]').forEach(button => {
+    button.setAttribute('aria-pressed', String(Number(button.dataset.laps) === selectedLaps));
+  });
+  document.querySelector('#track-label small').textContent = `${selectedLaps} ${selectedLaps === 1 ? 'LAP' : 'LAPS'} · 8 RACERS · MARIO KART STADIUM`;
+}
+for (const button of document.querySelectorAll('[data-laps]')) {
+  button.onclick = () => selectLaps(Number(button.dataset.laps));
+}
+syncLapOptions();
+function navigateDriver(direction) {
+  if (driverConfirmed) {
+    if (direction === 'left' || direction === 'right') selectLaps(selectedLaps === 1 ? 3 : 1);
+    return;
+  }
+  const index=CHARACTERS.findIndex(c=>c.id===selected);
+  const step={left:-1,right:1,up:-4,down:4}[direction];
+  chooseDriver(index+step);
+}
 async function begin() {
   if (starting) return;
   starting = true;
   const button = $("start"), label = button.innerHTML;
   button.disabled = true;
   button.textContent = "LOADING…";
-  await audio.unlock();
+  await audio.ui('start');
   starting = false;
   button.disabled = false;
   button.innerHTML = label;
@@ -485,8 +539,11 @@ function confirm() {
     resume();
     return;
   }
-  if (race.state === "ready") begin();
-  else if (race.state === "results") {
+  if (race.state === 'ready') {
+    if (!driverConfirmed) {setDriverConfirmed(true);audio.ui('confirm');}
+    else begin();
+  }
+  else if (race.state === "results" && resultsPresentation?.done) {
     constructRace();
     begin();
   }
@@ -507,16 +564,8 @@ for (const c of CHARACTERS) {
   b.className = "character" + (c.id === selected ? " selected" : "");
   b.setAttribute("aria-label", c.name);
   b.innerHTML = `<img src="${portrait(c)}" alt="${c.name}">`;
-  b.onclick = () => {
-    if (race.state !== "ready") return;
-    selected = c.id;
-    document
-      .querySelectorAll(".character")
-      .forEach((x) => x.classList.remove("selected"));
-    b.classList.add("selected");
-    $("chosen").textContent = c.name.toUpperCase();
-    constructRace();
-  };
+  b.setAttribute('aria-pressed',String(c.id===selected));
+  b.onclick = () => chooseDriver(CHARACTERS.indexOf(c));
   $("characters").append(b);
 }
 function pause(reason = "Take a breath. The race will wait.") {
@@ -534,8 +583,15 @@ function resume() {
   $("hud").getAnimations({subtree:true}).forEach(a=>{if(a.playState==="paused")a.play();});
   $("pause").hidden = true;
   lastFrame = performance.now();
-  audio.unlock();
+  audio.ui('confirm');
 }
+document.addEventListener('click', e => {
+  const button=e.target.closest('button, a');
+  if(!button || button.matches('.character,[data-laps],#start,#again,#resume'))return;
+  if(button.matches('a[href="/"]')&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){
+    e.preventDefault();audio.ui('cancel').then(()=>setTimeout(()=>location.href='/',100));
+  }else audio.ui('confirm');
+});
 window.addEventListener("keydown", (e) => {
   const handled = [
     "ArrowLeft",
@@ -555,6 +611,11 @@ window.addEventListener("keydown", (e) => {
   if (handled.includes(e.code)) e.preventDefault();
   if (e.repeat) return;
   keys.add(e.code);
+  if (race.state === 'ready' && e.code.startsWith('Arrow')) {
+    navigateDriver(e.code.slice(5).toLowerCase());
+    return;
+  }
+  if (e.code === 'Escape' && race.state === 'ready') { cancelDriver(); return; }
   if (e.code === "Enter") confirm();
   if (e.code === "Space") itemPulse = true;
   if (e.code === "Escape") paused ? resume() : pause();
@@ -562,7 +623,7 @@ window.addEventListener("keydown", (e) => {
     wheel.reset();
     captureUntil = performance.now() + 10000;
     if (usingPhone && race.state === "racing")
-      pause("Level the wheel for a moment, then press A or Enter.");
+      pause("Level the wheel for a moment, then press 2 or Enter.");
   }
   if (e.code === "KeyI") {
     wheel.invert = !wheel.invert;
@@ -873,7 +934,7 @@ function draw(dt, now) {
     k.wasGliding = r.gliding;
     if (!r.gliding) k.launchOrientation = null;
     k.model.rotation.y = r.spin > 0 ? time * 15 : r.drift ? -r.drift * 0.25 : 0;
-    k.model.rotation.z = (r.gliding ? -r.steer * 0.15 : -r.steer * 0.07) + Math.sin((r.contactAnimation||0)/.32*Math.PI*2)*(r.contactAnimation||0)*.35*(r.contactSide||.4);
+    k.model.rotation.z = (r.gliding ? -r.steer * 0.15 : -r.steer * 0.07) + Math.sin((r.contactAnimation||0)/.42*Math.PI*2)*(r.contactAnimation||0)*.55*(r.contactSide||.4);
     updateDriverLook(k, r, race.racers, paused ? 0 : dt, race.state === "racing");
     updateHeldItem(k.model, r, paused ? 0 : dt);
     updateBoostEffect(k.boostEffect,k.model,r.boost,time+i*.17);
@@ -998,6 +1059,15 @@ function draw(dt, now) {
   } else {
     lastFlightCamera = landingCamera = null;
   }
+  const finishBlend = p.finishTime === null ? 0 : THREE.MathUtils.smoothstep(race.time - (race.finishedAt ?? race.time), 0, .9);
+  if (p.finishTime !== null) {
+    const basis = roadFrame(p.s, p.lateral, p.heading, p.surfaceForward, p.surfaceNormal);
+    const angle = Math.PI * (1 - finishBlend), radius = THREE.MathUtils.lerp(9.6, 8, finishBlend);
+    for (const axis of ['x', 'y', 'z']) {
+      desired.eye[axis] = p[axis] + radius * (basis.forward[axis] * Math.cos(angle) + basis.right[axis] * Math.sin(angle)) + basis.up[axis] * THREE.MathUtils.lerp(3.65, 2.8, finishBlend);
+      desired.aim[axis] = THREE.MathUtils.lerp(desired.aim[axis], p[axis] + basis.up[axis] * 1.4, finishBlend);
+    }
+  }
   if (race.state === "ready") {
     const t = -p.heading - Math.PI*.31 + Math.sin(now*.00008)*.045;
     camTarget.set(p.x + Math.cos(t) * 7.6, p.y + 3.7, p.z + Math.sin(t) * 7.6);
@@ -1040,6 +1110,9 @@ function draw(dt, now) {
   camera.fov +=
     (57 + boostFeedback.strength*5 + boostFeedback.kick*2 + (p.gliding ? 3 : 0) - camera.fov) *
     (1 - Math.exp(-dt * 6));
+  // Leave the racer visible to the left of the results table.
+  if (finishBlend > 0) camera.setViewOffset(innerWidth, innerHeight, innerWidth * .22 * finishBlend, 0, innerWidth, innerHeight);
+  else camera.clearViewOffset();
   camera.updateProjectionMatrix();
   key.position.set(p.x - 30, p.y + 60, p.z + 25);
   for (let i = 0; i < trackLights.length; i++) {
@@ -1099,7 +1172,7 @@ function updateHUD() {
   const p = race.player,
     position = race.position(p);
   raceNumerals($("coins"), String(p.coins).padStart(2, "0"));
-  raceNumerals($("lap"), `${p.lap}/3`);
+  raceNumerals($("lap"), `${p.lap}/${race.laps}`);
   if($('position').dataset.rank!==String(position)){
     $('position').dataset.rank=String(position);
     $('position').innerHTML=raceLettering(String(position),position===1?'gold':position===2?'silver':position===3?'bronze':'orange')+`<sup>${ordinal(position).replace(String(position),'')}</sup>`;
@@ -1140,10 +1213,15 @@ function updateHUD() {
     race.state === "countdown" ||
     (race.state === "racing" && race.time < 3.65)
   );
-  const count=usingPhone && race.state==='countdown' && !wheel.armed?'LEVEL':race.count?'':'GO!';
+  const waiting=usingPhone && race.state==='countdown' && !wheel.armed;
+  const count=waiting?'':race.count?String(race.count):'GO!';
+  $('wheel-ready').hidden=!waiting;
+  $('lamps').style.opacity=waiting?'.35':'1';
   if($('count-number').dataset.value!==count){
     $('count-number').dataset.value=count;
-    $('count-number').innerHTML=count==='GO!'?raceLettering('GO!'):count;
+    $('count-number').innerHTML=count?raceLettering(count):'';
+    $('count-number').getAnimations().forEach(a=>a.cancel());
+    if(count && count!=='GO!')$('count-number').animate([{opacity:0,scale:'1.5'},{opacity:1,scale:'1',offset:.18},{opacity:1,scale:'1',offset:.7},{opacity:0,scale:'.9'}],{duration:950});
     if(count==='GO!')$('count-number').animate([{opacity:0,scale:'1.4'},{opacity:1,scale:'1',offset:.2},{opacity:1,scale:'1',offset:.7},{opacity:0,scale:'1.12'}],{duration:650});
   }
   $("lamps").classList.toggle("go", race.count === 0);
@@ -1151,18 +1229,29 @@ function updateHUD() {
     .querySelectorAll("i")
     .forEach((el, i) => el.classList.toggle("on", i < 4 - race.count));
   drawMap();
-  if (race.state === "results" && !resultsShown) {
+  if (["finishing", "results"].includes(race.state) && !resultsShown && audio.resultsReady) {
+    race.showResults();
     resultsShown = true;
     $("results").hidden = false;
     $("hud").hidden = true;
     $("result-summary").textContent =
       `${p.character.name} · ${ordinal(position)} place · ${formatTime(p.finishTime)}`;
-    $("standings").innerHTML = race.standings
+    const standings=race.standings.slice();
+    resultsPresentation={started:performance.now(),duration:1.2,done:false,times:standings.map(r=>r.finishTime)};
+    $('again').disabled=true;
+    audio.presentResults(race,resultsPresentation.duration);
+    $("standings").innerHTML = standings
       .map(
         (r, i) =>
-          `<div class="standing ${r.id === 0 ? "me" : ""}"><b>${i + 1}</b><img src="${portrait(r.character)}" alt=""><span>${r.character.name}${r.id === 0 ? " · YOU" : ""}</span><span class="time">${formatTime(r.finishTime)}</span></div>`,
+          `<div class="standing ${r.id === 0 ? "me" : ""}" style="--row:${i}"><b>${i + 1}</b><img src="${portrait(r.character)}" alt=""><span>${r.character.name}</span><span class="time">${r.finishTime === null ? "—" : formatTime(0)}</span></div>`,
       )
       .join("");
+  }
+  if(resultsShown&&resultsPresentation&&!resultsPresentation.done){
+    const elapsed=(performance.now()-resultsPresentation.started)/1000;
+    const progress=Math.max(0,Math.min(1,(elapsed-.12)/(resultsPresentation.duration-.12)));
+    document.querySelectorAll('#standings .time').forEach((el,i)=>el.textContent=resultsPresentation.times[i] === null ? '—' : formatTime(resultsPresentation.times[i]*progress));
+    if(progress===1){resultsPresentation.done=true;$('again').disabled=false;}
   }
 }
 const mapCtx = $("minimap").getContext("2d");
@@ -1235,7 +1324,7 @@ function frame(now) {
       race.state === "racing" &&
       !keyboard
     ) {
-      pause("Wheel signal lost. Hold the phone flat, then press A or Enter.");
+      pause("Wheel signal lost. Hold the phone flat, then press 2 or Enter.");
       phoneHadGas = false;
     }
     phoneHadGas = remote.live && remote.gas;

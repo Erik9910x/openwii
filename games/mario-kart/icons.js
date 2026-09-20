@@ -21,7 +21,22 @@ export const ITEM_ICONS = {
     '<text x="50" y="72" fill="#7183a9" font-family="Arial" font-weight="bold" font-size="75" text-anchor="middle">?</text>',
   ),
 };
+// Optional native menu sprites. Cropping happens in the renderer, preserving
+// the source sheet untouched. Coordinates exclude its one-pixel grid lines.
+const sourcePortraits = new Map();
+export async function loadSourcePortraits() {
+  const image = new Image();
+  const loaded = await new Promise(resolve => { image.onload=()=>resolve(true); image.onerror=()=>resolve(false); image.src='/assets/mario-kart/ui/driver-icons.png'; });
+  if (!loaded) return false;
+  for (const [id,col,row] of [['mario',0,0],['luigi',1,0],['peach',2,0],['yoshi',6,0],['toad',6,1],['koopa',7,1],['bowser',7,3],['donkey-kong',8,3]]) {
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=128;
+    canvas.getContext('2d').drawImage(image,1+col*129,1+row*129,128,128,0,0,128,128);
+    sourcePortraits.set(id,canvas.toDataURL());
+  }
+  return true;
+}
 export function portrait(c) {
+  if (sourcePortraits.has(c.id)) return sourcePortraits.get(c.id);
   const animal = ["yoshi", "bowser", "donkey-kong", "koopa"].includes(c.id),
     skin = animal ? c.color : "#ffcc9f";
   let extra = "";

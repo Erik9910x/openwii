@@ -32,7 +32,7 @@ try{
  await page.goto('http://localhost:8080/games/mario-kart/?evidence=1');await page.waitForFunction(()=>window.__kart?.karts.every(k=>k.source==='glb'));
  await page.evaluate(async()=>{window.course=await import('./track.js');window.T=await import('three');});
  await mark('Single-action menu');await screenshot('menu');await page.waitForTimeout(1000);
- await page.keyboard.press('Enter');await page.waitForFunction(()=>__kart.race.state==='racing');await page.keyboard.press('KeyC');
+ await page.keyboard.press('Enter'); await page.keyboard.press('Enter');await page.waitForFunction(()=>__kart.race.state==='racing');await page.keyboard.press('KeyC');
  const boxS=await page.evaluate(()=>__kart.race.boxes[0].s);
  await setup(boxS-19,{lateral:0,speed:25});await mark('Real mystery-box contact and scrolling reel');
  await drive(3.2);report.events.push(...await page.evaluate(()=>localEvents));await screenshot('item-ready');

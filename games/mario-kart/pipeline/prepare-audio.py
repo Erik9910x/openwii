@@ -24,6 +24,7 @@ def wav(key,name,gain=0.6,scope=None):
   nums=re.findall(r'loop (?:start|end): (\d+) samples',x['loopMetadata']); entry.update(loopStart=int(nums[0])/x['rate'],loopEnd=int(nums[1])/x['rate'])
  manifest['cues'][key]=entry
 for key,name,gain in [
+ ('uiCursor','SE_SYS_CMN_CURSOR.wav',.7),('uiConfirm','SE_SYS_BTN_OK.wav',.65),('uiCancel','SE_SYS_CANCEL_S.wav',.55),('uiStart','SE_SYS_RACE_OK.wav',.65),
  ('countdown','SE_RC_321.wav',.8),('go','SE_RC_GO.wav',.9),('roulette','SE_RC_ITEM_ROULETTE.wav',.48),('decide','SE_RC_ITEM_DECIDE.wav',.85),
  ('drift1','SE_KT_DRIFT_HIBANA_BLUE.wav',.38),('drift2','SE_KT_DRIFT_HIBANA_RED.wav',.42),('drift3','SE_KT_DRIFT_HIBANA_PURPLE.wav',.45),
  ('turbo','SE_KT_DASH_MINI.wav',.75),('ultra','SE_KT_DASH_MINI_ULTRA.wav',.78),('boost','SE_KT_DASH_BOARD_TND.wav',.7),('rocket','SE_KT_START_DASH.wav',.7),('burnout','SE_KT_START_FAIL.wav',.65),
@@ -54,10 +55,12 @@ def music(key,file,loop=False,gain=.46):
  manifest['cues'][key]=entry
 for key,file in [('race','mario-kart-stadium.flac'),('raceLead','mario-kart-stadium-frontrunning.flac'),('final','mario-kart-stadium-final-lap.flac'),('finalLead','mario-kart-stadium-final-lap-frontrunning.flac'),('menu','selection-screen-course-select.flac'),('win','race-results-you-won.flac'),('lose','race-results-you-lost.flac')]:music(key,file,True)
 for key,file in [('grid','starting-grid-grand-prix-vs-race.flac'),('finalLap','final-lap.flac'),('finish','finish.flac'),('finishWin','finish-1st-place.flac'),('finishMid','finish-2nd-6th-place.flac'),('finishLose','finish-7th-12th-place.flac'),('star','super-star.flac')]:music(key,file,False,.7 if key!='star' else .46)
+# Original results entrance and tally UI sounds.
+for key,name,gain in [('resultsIn','SE_RSLT_IN.wav',.7),('resultsCount','SE_RSLT_TIME_COUNT.wav',.32),('resultsStop','SE_RSLT_TIME_COUNT_STOP.wav',.65)]:wav(key,name,gain)
 # Optional manually supplied isolated effects replace the labelled placeholders.
 # Preserve original uploads in this folder; the runtime manifest records hashes.
 manual=SOURCE/'manual'
-for key in ['box','use-green','use-red','use-banana','use-blue','hit-green','hit-red','hit-banana','hit-blue']:
+for key in ['box','use-green','use-red','use-banana','use-blue','hit-green','hit-red','hit-banana','hit-blue','shellConfirm']:
  source=manual/(key+'.wav')
  if source.is_file():
   import wave

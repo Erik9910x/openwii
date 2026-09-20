@@ -139,7 +139,9 @@ function makeRacer(character, i) {
   };
 }
 export class Race {
-  constructor({ seed = 381, character = "mario", onEvent = () => {} } = {}) {
+  constructor({ seed = 381, character = "mario", laps = 3, onEvent = () => {} } = {}) {
+    this.laps = laps === 1 ? 1 : 3;
+    this.finishedAt = null;
     this.seed = seed;
     this.rng = seeded(seed);
     this.onEvent = onEvent;
@@ -157,7 +159,6 @@ export class Race {
     this.boxes = ITEM_ROWS.map((p, id) => ({ ...p, id, respawn: 0 }));
     this.coins = COIN_SPOTS.map((p, id) => ({ ...p, id, respawn: 0 }));
     this.count = 3;
-    this.resultsAt = Infinity;
     this.pendingItem = false;
   }
   emit(type, racer = this.player, extra = {}) {
@@ -187,8 +188,7 @@ export class Race {
     if (
       !Number.isFinite(dt) ||
       dt <= 0 ||
-      this.state === "ready" ||
-      this.state === "results"
+      this.state === "ready"
     )
       return;
     // A long background stall pauses instead of running a race without the driver.
@@ -244,17 +244,20 @@ export class Race {
       .map((r) => r.id);
     if (this.player.finishTime !== null && this.state === "racing") {
       this.state = "finishing";
-      this.resultsAt = this.time + 3;
+      this.finishedAt = this.time;
       this.emit("finish");
     }
     if (
       this.state === "finishing" &&
-      this.time >= this.resultsAt &&
       this.finishOrder.length === 8
     ) {
-      this.state = "results";
-      this.emit("results");
+      this.showResults();
     }
+  }
+  showResults() {
+    if (this.state !== "finishing") return;
+    this.state = "results";
+    this.emit("results");
   }
   cpuInput(r) {
     // Pure pursuit: steering derived from a point ahead in world coordinates.
@@ -294,7 +297,7 @@ export class Race {
       "contactAnimation",
     ])
       r[k] = Math.max(0, (r[k] || 0) - dt);
-    r.sideVelocity=(r.sideVelocity||0)*Math.exp(-dt*6);
+    r.sideVelocity=(r.sideVelocity||0)*Math.exp(-dt*2.5);
     if(r.itemUse) r.itemUse.age += dt;
     if (r.roulette > 0) {
       r.roulette -= dt;
@@ -346,7 +349,7 @@ export class Race {
         this.emit("drift", r, { tier });
       }
     }
-    const offroad = !r.gliding && (activeSurfaceTrack ? !activeSurfaceTrack.onRoad(r.s,r.lateral,r) : Math.abs(r.lateral)>ROAD_HALF+.2);
+    const offroad = !r.gliding && !r.jump && (activeSurfaceTrack ? !activeSurfaceTrack.onRoad(r.s,r.lateral,r) : Math.abs(r.lateral)>ROAD_HALF+.2);
     let max = topSpeed(r.coins);
     if (auto) {
       const gap = this.player.progress - r.progress;
@@ -354,6 +357,8 @@ export class Race {
     }
     if (r.boost > 0) max = 55;
     if (r.star > 0) max = 53;
+    // A boost expiring over the lip must not cut airborne momentum.
+    if (r.jump) max = Math.max(max, r.jump.speed);
     if (offroad && r.boost <= 0 && r.star <= 0) max *= 0.43;
     if (spinning) r.speed *= Math.exp(-5 * dt);
     else if (input.brake) {
@@ -429,17 +434,17 @@ export class Race {
       r.checkpoints++;
       r.nextCheckpoint += L / 8;
       if (r.checkpoints % 8 === 0) {
-        if (r.checkpoints === 24 && r.finishTime === null) {
+        if (r.checkpoints === this.laps * 8 && r.finishTime === null) {
           const f = clamp(
-            (3 * L - previousProgress) /
+            (this.laps * L - previousProgress) /
               Math.max(1e-9, r.progress - previousProgress),
             0,
             1,
           );
           r.finishTime = this.raceTime - dt + f * dt;
-        } else if (r.checkpoints < 24) {
+        } else if (r.checkpoints < this.laps * 8) {
           r.lap = r.checkpoints / 8 + 1;
-          this.emit(r.lap === 3 ? "finalLap" : "lap", r);
+          this.emit(r.lap === this.laps ? "finalLap" : "lap", r);
         }
       }
     }
@@ -521,7 +526,7 @@ export class Race {
           r.roulette <= 0 &&
           this.touches(r, b, 2.5)
         ) {
-          b.respawn = 3;
+          b.respawn = 1;
           r.roulette = 1.65;
           this.emit("box", r, {box: this.boxes.indexOf(b)});
         }
@@ -541,7 +546,7 @@ export class Race {
     r.item = null;
     r.itemUse = {type,age:0};
     r.itemDelay = 2 + this.rng() * 3;
-    this.emit("useItem", r, { item: type });
+    this.emit("useItem", r, { item: type, projectile: ["green","red","blue"].includes(type) ? this.nextId : null });
     if (type === "mushroom") r.boost = Math.max(r.boost, 2.3);
     else if (type === "star") {
       r.star = 7;
@@ -580,7 +585,7 @@ export class Race {
     }
     return true;
   }
-  hit(r, cause = "shell") {
+  hit(r, cause = "shell", attacker = null) {
     if (r.star > 0 || r.invulnerable > 0 || r.finishTime !== null) return false;
     r.spin = cause === "blue" ? 1.65 : 1.1;
     r.invulnerable = 2.3;
@@ -590,7 +595,7 @@ export class Race {
     r.charge = 0;
     r.tier = 0;
     r.boost = 0;
-    this.emit("hit", r, { cause });
+    this.emit("hit", r, { cause, attacker });
     return true;
   }
   collisions(dt) {
@@ -637,12 +642,12 @@ export class Race {
             const frame=r=>roadFrame(r.s,r.lateral,r.heading,r.surfaceForward,r.surfaceNormal);
             const impact=contactResponse(a,b,frame(a),frame(b),contact);
             if(impact>1.5)for(const r of [a,b])if(r.contactCooldown<=0){
-              r.contactAnimation=.32;r.contactCooldown=.3;
-              this.emit("contact",r,{impact});
+              r.contactAnimation=.42;r.contactCooldown=.3;
+              this.emit("contact",r,{impact,other:r===a?b.id:a.id});
             }
           }
-          if (a.star > 0) this.hit(b, "star");
-          if (b.star > 0) this.hit(a, "star");
+          if (a.star > 0) this.hit(b, "star", a.id);
+          if (b.star > 0) this.hit(a, "star", b.id);
           if (a.anti && b.anti && a.bumpCooldown <= 0 && b.bumpCooldown <= 0) {
             a.boost = Math.max(a.boost, 0.65);
             b.boost = Math.max(b.boost, 0.65);
@@ -666,7 +671,7 @@ export class Race {
         if(!target){o.life=0;continue;}
         o.attack+=dt;o.s=target.s;o.lateral=target.lateral;
         if(o.attack>=.85){
-          for(const k of this.racers)if(Math.abs(wrap(k.s-target.s+L/2,L)-L/2)<7)this.hit(k,'blue');
+          for(const k of this.racers)if(Math.abs(wrap(k.s-target.s+L/2,L)-L/2)<7)this.hit(k,'blue',o.owner);
           o.life=0;
         }
         continue;
@@ -696,7 +701,7 @@ export class Race {
           ((!r.gliding && !r.jump) || o.type === "blue")
         ) {
           if (o.type === "blue") {o.attack=0;o.s=r.s;o.lateral=r.lateral;}
-          else {this.hit(r,o.type);o.life=0;}
+          else {this.hit(r,o.type,o.owner);o.life=0;}
           break;
         }
       }

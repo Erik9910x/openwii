@@ -66,10 +66,10 @@ test("invalid samples cannot contaminate steering; idle/stale input becomes neut
 test("multi-touch holds, individual release, snapshots, and stale holds", () => {
   const w = settled();
   w.command({ type: "button", button: "2", pressed: true }, 800);
-  w.command({ type: "button", button: "B", pressed: true }, 820);
+  w.command({ type: "button", button: "A", pressed: true }, 820);
   let r = w.read(825);
   assert.ok(r.gas && r.drift);
-  w.command({ type: "button-up", button: "B" }, 850);
+  w.command({ type: "button-up", button: "A" }, 850);
   r = w.read(860);
   assert.ok(r.gas && !r.drift);
   w.command({ type: "buttons", buttons: { 1: true } }, 900);
@@ -127,4 +127,12 @@ test("eight model specifications have distinct silhouettes, named wheel pivots a
   }
   // Mario/Luigi deliberately share the plumber silhouette, with different badges.
   assert.equal(signatures.size, 7);
+});
+
+test("Mario Kart uses A for drift and right for items, with separate brake and gas", () => {
+  const w = settled();
+  w.setButtons({A:true,right:true,2:true},800);
+  const r=w.read(810);assert.ok(r.gas&&r.drift&&r.item&&!r.brake);
+  w.setButtons({B:true,up:true,1:true},820);
+  const old=w.read(830);assert.ok(old.brake&&!old.gas&&!old.drift&&!old.item);
 });

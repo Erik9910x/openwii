@@ -4,6 +4,7 @@
 import { chromium } from "playwright";
 import { writeFile, mkdir } from "node:fs/promises";
 import assert from "node:assert/strict";
+const base=process.env.KART_URL || "http://localhost:8080";
 const output = new URL("./evidence/", import.meta.url);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -31,7 +32,7 @@ try {
     if (m.type() === "error" && m.text().includes("THREE."))
       report.errors.push(m.text());
   });
-  await page.goto("http://localhost:8080/games/mario-kart/?evidence=1&sourceCourse=0");
+  await page.goto(base+"/games/mario-kart/?evidence=1&sourceCourse=0");
   await page.waitForFunction(() => window.__kart?.assets);
   assert.equal(await page.evaluate(() => __kart.assets.loaded), 8);
   mark(
@@ -40,7 +41,7 @@ try {
   );
   await page.screenshot({ path: new URL("intro.png", output).pathname });
   await page.click("#mute");
-  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter"); await page.keyboard.press("Enter");
   await page.waitForFunction(
     () => __kart.race.state === "countdown" && __kart.audioState.gain === 0,
   );
@@ -67,9 +68,9 @@ try {
   }));
   assert.ok(gas.speed > 20);
   mark("Keyboard Z accelerates; timed rocket start", gas);
-  assert.ok(await page.evaluate(() => __kart.audioState.frequency > 100));
+  assert.ok(await page.evaluate(() => __kart.audioState.samples.ready ? __kart.audioState.samples.loops.some(n=>n.slot==="motor" && n.rate>1) : __kart.audioState.frequency > 100));
   mark(
-    "Actual Web Audio engine oscillator rises with speed",
+    "Actual Web Audio engine pitch rises with speed",
     await page.evaluate(() => __kart.audioState),
   );
   // Known PCM fixture served through the same optional-file fetch/decode route.
@@ -92,6 +93,11 @@ try {
       Math.round(Math.sin((i * 2 * Math.PI * 880) / 22050) * 3000),
       44 + i * 2,
     );
+  if (await page.evaluate(()=>__kart.audioState.samples.ready)) {
+    await page.evaluate(()=>__kart.race.onEvent({type:'coin',racer:0}));
+    assert.ok(await page.evaluate(()=>__kart.audioState.samples.events.some(e=>e.key==='coin')));
+    mark('Original coin sample reaches the running Web Audio mix');
+  } else {
   await page.route("**/audio/mk-coin.mp3", (r) =>
     r.fulfill({ status: 200, contentType: "audio/wav", body: wav }),
   );
@@ -100,6 +106,7 @@ try {
     __kart.audioState.overrides.includes("mk-coin"),
   );
   mark("Optional audio override fetches and decodes through core AudioEngine");
+  }
   const h = await page.evaluate(() => __kart.race.player.heading);
   await page.keyboard.down("ArrowRight");
   await page.waitForTimeout(240);
@@ -181,7 +188,7 @@ try {
   await fallback.route("**/assets/mario-kart/**", (r) =>
     r.fulfill({ status: 404, body: "" }),
   );
-  await fallback.goto("http://localhost:8080/games/mario-kart/?evidence=1&sourceCourse=0");
+  await fallback.goto(base+"/games/mario-kart/?evidence=1&sourceCourse=0");
   await fallback.waitForFunction(() => window.__kart?.assets);
   assert.equal(await fallback.evaluate(() => __kart.assets.fallback), 8);
   await fallback.screenshot({
@@ -190,10 +197,10 @@ try {
   mark("Asset-free fallback renders all eight racers");
   await fallback.close();
   const games = await page.request
-    .get("http://localhost:8080/api/games")
+    .get(base+"/api/games")
     .then((r) => r.json());
-  assert.equal(games[0].slug, "fruit-ninja");
-  assert.equal(games[1].slug, "mario-kart");
+  assert.equal(games[0].slug, "mario-kart");
+  assert.equal(games[1].slug, "fruit-ninja");
   mark(
     "Launcher order",
     games.map((g) => g.slug),
@@ -201,7 +208,7 @@ try {
   assert.equal(
     (
       await page.request.get(
-        "http://localhost:8080/assets/mario-kart/mario.glb",
+        base+"/assets/mario-kart/mario.glb",
       )
     ).status(),
     200,
@@ -209,7 +216,7 @@ try {
   assert.equal(
     (
       await page.request.get(
-        "http://localhost:8080/vendor/three-examples/loaders/GLTFLoader.js",
+        base+"/vendor/three-examples/loaders/GLTFLoader.js",
       )
     ).status(),
     200,
@@ -223,7 +230,7 @@ try {
     hasTouch: true,
   });
   phone.on("pageerror", (e) => report.errors.push(e.message));
-  await phone.goto("http://localhost:8080/controller");
+  await phone.goto(base+"/controller");
   await phone.waitForSelector("body.wheel-mode");
   await phone.evaluate(() => {
     document.getElementById("gate").classList.add("hide");
@@ -241,7 +248,7 @@ try {
     await phone.waitForTimeout(35);
   }
   assert.equal(await page.evaluate(() => __kart.wheel.ref), null);
-  assert.equal(await page.locator("#count-number").textContent(), "LEVEL");
+  assert.ok(await page.locator("#wheel-ready").isVisible());
   const heldAt = await page.evaluate(() => __kart.race.time);
   for (let i = 0; i < 8; i++) {
     await phone.evaluate(() =>
@@ -262,9 +269,9 @@ try {
   assert.ok(await page.evaluate(() => __kart.wheel.ref));
   mark("Stable level sensor packets arm wheel and release countdown");
   const gasBox = await phone.locator("#btn-2").boundingBox(),
-    driftBox = await phone.locator("#btn-b").boundingBox();
+    driftBox = await phone.locator("#btn-a").boundingBox();
   assert.ok(gasBox && driftBox);
-  assert.ok(gasBox.width > 60 && driftBox.width > 60);
+  assert.ok(gasBox.width >= 44 && driftBox.width >= 64);
   const client = await phone.context().newCDPSession(phone);
   const touch = (box, id) => ({
     x: box.x + box.width / 2,
@@ -276,7 +283,7 @@ try {
     touchPoints: [touch(gasBox, 1), touch(driftBox, 2)],
   });
   await page.waitForFunction(
-    () => __kart.wheel.buttons["2"] && __kart.wheel.buttons.B,
+    () => __kart.wheel.buttons["2"] && __kart.wheel.buttons.A,
   );
   mark("Phone simultaneous gas and drift press reaches game");
   await client.send("Input.dispatchTouchEvent", {
@@ -284,9 +291,9 @@ try {
     touchPoints: [touch(driftBox, 2)],
   });
   await page.waitForFunction(
-    () => __kart.wheel.buttons["2"] && !__kart.wheel.buttons.B,
+    () => __kart.wheel.buttons["2"] && !__kart.wheel.buttons.A,
   );
-  mark("Releasing B retains held gas");
+  mark("Releasing A retains held gas");
   await client.send("Input.dispatchTouchEvent", {
     type: "touchEnd",
     touchPoints: [],

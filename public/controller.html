@@ -33,8 +33,8 @@
   #remote {
     width: min(86vw, 330px); margin: auto; height: 100%; max-height: 780px;
     display: flex; flex-direction: column; align-items: center;
-    padding: clamp(8px, 1.8vh, 20px) 24px clamp(6px, 1.4vh, 14px);
-    gap: clamp(3px, 1vh, 12px);
+    padding: clamp(8px, calc(1.8 * var(--remote-vh, 1vh)), 20px) 24px clamp(6px, calc(1.4 * var(--remote-vh, 1vh)), 14px);
+    gap: clamp(3px, calc(1 * var(--remote-vh, 1vh)), 12px);
     background: linear-gradient(175deg, #fdfdfe, #eef1f5 55%, #e2e7ed);
     border: 1px solid #cfd6de; border-radius: 34px;
     box-shadow: 0 26px 70px #000a, inset 0 2px 0 #fff, inset 0 -16px 34px #00000012;
@@ -51,10 +51,10 @@
      as the connection light: soft blue halo when linked to the PC, red halo
      when the server is unreachable. */
   #row-top { width: 100%; display: flex; flex: none; position: relative;
-             align-items: flex-start; min-height: clamp(38px, 6vh, 48px); }
+             align-items: flex-start; min-height: clamp(38px, calc(6 * var(--remote-vh, 1vh)), 48px); }
   #pwr-wrap { display: flex; flex-direction: column; align-items: center; }
   #power {
-    width: clamp(30px, 4.6vh, 38px); height: clamp(30px, 4.6vh, 38px); border-radius: 50%;
+    width: clamp(30px, calc(4.6 * var(--remote-vh, 1vh)), 38px); height: clamp(30px, calc(4.6 * var(--remote-vh, 1vh)), 38px); border-radius: 50%;
     background: linear-gradient(180deg, #ffffff, #e8edf2);
     border: 1px solid #c6cfd9;
     color: #d92b1f; font-size: 15px;
@@ -65,7 +65,7 @@
   #power.linked { box-shadow: 0 2px 4px #0002, inset 0 1px 0 #fff, 0 0 14px #45a6ff66; }
   #power.err { box-shadow: 0 2px 4px #0002, inset 0 1px 0 #fff, 0 0 14px #ff5f6d99; }
   #brand { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-           font-size: clamp(13px, 2vh, 16px); font-weight: 700; color: #aab7c4; }
+           font-size: clamp(13px, calc(2 * var(--remote-vh, 1vh)), 16px); font-weight: 700; color: #aab7c4; }
 
   /* D-pad: a solid cross. Sized by viewport height so short phones still fit
      the whole face; segments are percentages of the pad, not pixels. */
@@ -77,7 +77,7 @@
        composited silhouette, giving one cross-shaped shadow;
      - the centre paints last, borderless and a hair oversized, covering the
        arms' inner border edges. */
-  #dpad { position: relative; width: clamp(84px, 15vh, 128px); height: clamp(84px, 15vh, 128px);
+  #dpad { position: relative; width: clamp(84px, calc(15 * var(--remote-vh, 1vh)), 128px); height: clamp(84px, calc(15 * var(--remote-vh, 1vh)), 128px);
           flex: none; filter: drop-shadow(0 3px 6px rgba(30, 50, 80, .16)); }
   .dp {
     position: absolute; width: 34.4%; height: 34.4%;
@@ -110,12 +110,12 @@
 
   /* A — the hero button. */
   #btn-a {
-    width: clamp(64px, 12vh, 96px); height: clamp(64px, 12vh, 96px);
+    width: clamp(64px, calc(12 * var(--remote-vh, 1vh)), 96px); height: clamp(64px, calc(12 * var(--remote-vh, 1vh)), 96px);
     border-radius: 50%; flex: none;
     background: linear-gradient(180deg, #ffffff, #eef2f6);
     border: 1px solid #c6cfd9;
     box-shadow: 0 4px 10px #0003, inset 0 2px 0 #fff, inset 0 -6px 12px #a9b6c322;
-    color: #55708e; font-size: clamp(26px, 4.8vh, 38px); font-weight: 700;
+    color: #55708e; font-size: clamp(26px, calc(4.8 * var(--remote-vh, 1vh)), 38px); font-weight: 700;
     transition: transform .06s ease;
   }
   #btn-a:active {
@@ -125,7 +125,7 @@
 
   /* B — the underside trigger, peeking in. */
   #btn-b {
-    width: 62%; height: clamp(38px, 6vh, 46px);
+    width: 62%; height: clamp(38px, calc(6 * var(--remote-vh, 1vh)), 46px);
     border-radius: 14px 14px 22px 22px; flex: none;
     background: linear-gradient(180deg, #a7b0ba, #8a939d);
     box-shadow: inset 0 1px 0 #ffffff44, 0 3px 7px #0003;
@@ -136,12 +136,12 @@
   /* − ⌂ + */
   #row-mid { display: flex; align-items: center; gap: 22px; flex: none; }
   .pill {
-    width: clamp(34px, 5.4vh, 42px); height: clamp(34px, 5.4vh, 42px); border-radius: 50%;
+    width: clamp(34px, calc(5.4 * var(--remote-vh, 1vh)), 42px); height: clamp(34px, calc(5.4 * var(--remote-vh, 1vh)), 42px); border-radius: 50%;
     background: linear-gradient(180deg, #f2f5f8, #dde3ea);
     border: 1px solid #c6cfd9; box-shadow: 0 2px 4px #0002, inset 0 1px 0 #fff;
     color: #5a6c80; font-size: 22px; font-weight: 700;
   }
-  #btn-home { width: clamp(40px, 6.4vh, 50px); height: clamp(40px, 6.4vh, 50px); font-size: 21px;
+  #btn-home { width: clamp(40px, calc(6.4 * var(--remote-vh, 1vh)), 50px); height: clamp(40px, calc(6.4 * var(--remote-vh, 1vh)), 50px); font-size: 21px;
     background: linear-gradient(180deg, #4a5560, #39424c); border-color: #2e363f;
     color: #e8ecf4; }
   .pill:active { transform: scale(.92); box-shadow: 0 1px 2px #0002, inset 0 2px 6px #8fa1b444; }
@@ -150,7 +150,7 @@
 
   /* Speaker grille — pulses when the remote "speaks". */
   #speaker { display: grid; grid-template-columns: repeat(5, 7px);
-             gap: clamp(5px, 1vh, 8px) 8px; flex: none; }
+             gap: clamp(5px, calc(1 * var(--remote-vh, 1vh)), 8px) 8px; flex: none; }
   #speaker i {
     width: 7px; height: 7px; border-radius: 50%; background: #c3ccd5;
     box-shadow: inset 0 1px 1px #0002; transition: background .12s, box-shadow .12s;
@@ -158,10 +158,10 @@
   #speaker.talk i { background: #6fb2ff; box-shadow: 0 0 8px #6fb2ff88; }
 
   /* 1 / 2 */
-  #ones { display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 12px);
+  #ones { display: flex; flex-direction: column; gap: clamp(6px, calc(1.2 * var(--remote-vh, 1vh)), 12px);
           align-items: center; flex: none; }
   .num {
-    width: clamp(34px, 5.8vh, 46px); height: clamp(34px, 5.8vh, 46px); border-radius: 50%;
+    width: clamp(34px, calc(5.8 * var(--remote-vh, 1vh)), 46px); height: clamp(34px, calc(5.8 * var(--remote-vh, 1vh)), 46px); border-radius: 50%;
     background: linear-gradient(180deg, #f2f5f8, #dde3ea);
     border: 1px solid #c6cfd9; box-shadow: 0 2px 4px #0002, inset 0 1px 0 #fff;
     color: #5a6c80; font-size: 19px; font-weight: 700;
@@ -170,7 +170,7 @@
 
   /* Player LEDs. */
   #leds { display: flex; gap: 14px; flex: none;
-          margin-bottom: clamp(4px, 1.2vh, 12px); }
+          margin-bottom: clamp(4px, calc(1.2 * var(--remote-vh, 1vh)), 12px); }
   #leds i {
     width: 13px; height: 8px; border-radius: 2.5px; background: #c3ccd5;
     box-shadow: inset 0 1px 1px #0003;
@@ -189,16 +189,16 @@
   /* Landscape / very short: drop the decorative rows, tuck 1 and 2 side by
      side, and let the big controls shrink further. */
   @media (max-height: 560px) {
-    #speaker { display: none; }
-    #remote { gap: 2px; padding: 8px 24px 6px; }
-    #ones { flex-direction: row; gap: 10px; }
-    #dpad { width: clamp(64px, 15vh, 128px); height: clamp(64px, 15vh, 128px); }
-    #btn-a { width: clamp(50px, 12vh, 96px); height: clamp(50px, 12vh, 96px); }
-    #btn-b { height: clamp(30px, 6vh, 46px); }
-    #power { width: 30px; height: 30px; }
-    .num { width: clamp(30px, 5.8vh, 46px); height: clamp(30px, 5.8vh, 46px); }
-    .pill { width: clamp(28px, 5.4vh, 42px); height: clamp(28px, 5.4vh, 42px); }
-    #btn-home { width: clamp(32px, 6.4vh, 50px); height: clamp(32px, 6.4vh, 50px); }
+    body:not(.wheel-mode) #speaker { display: none; }
+    body:not(.wheel-mode) #remote { gap: 2px; padding: 8px 24px 6px; }
+    body:not(.wheel-mode) #ones { flex-direction: row; gap: 10px; }
+    body:not(.wheel-mode) #dpad { width: clamp(64px, calc(15 * var(--remote-vh, 1vh)), 128px); height: clamp(64px, calc(15 * var(--remote-vh, 1vh)), 128px); }
+    body:not(.wheel-mode) #btn-a { width: clamp(50px, calc(12 * var(--remote-vh, 1vh)), 96px); height: clamp(50px, calc(12 * var(--remote-vh, 1vh)), 96px); }
+    body:not(.wheel-mode) #btn-b { height: clamp(30px, calc(6 * var(--remote-vh, 1vh)), 46px); }
+    body:not(.wheel-mode) #power { width: 30px; height: 30px; }
+    body:not(.wheel-mode) .num { width: clamp(30px, calc(5.8 * var(--remote-vh, 1vh)), 46px); height: clamp(30px, calc(5.8 * var(--remote-vh, 1vh)), 46px); }
+    body:not(.wheel-mode) .pill { width: clamp(28px, calc(5.4 * var(--remote-vh, 1vh)), 42px); height: clamp(28px, calc(5.4 * var(--remote-vh, 1vh)), 42px); }
+    body:not(.wheel-mode) #btn-home { width: clamp(32px, calc(6.4 * var(--remote-vh, 1vh)), 50px); height: clamp(32px, calc(6.4 * var(--remote-vh, 1vh)), 50px); }
   }
 
   /* ── Wake gate ───────────────────────────────────────────────────────── */
@@ -246,28 +246,25 @@
 
 /* Wheel profile: large, separated multi-touch pedals with clear Wii labels. */
 #wheel-guide { display:none; }
-.wheel-mode #wheel-guide { display:block; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:4; color:#a9d8ff; text-shadow:0 1px 3px #0d243b; font:700 13px system-ui; text-align:center; }
-.wheel-mode #stage { width:100%; height:100%; }
-.wheel-mode #remote { width:94vw; height:85vh; max-height:none; max-width:850px; display:block; position:relative; transform:none; margin-top:22px; }
-.wheel-mode #remote > * { display:none; }
-.wheel-mode #remote #btn-a, .wheel-mode #remote #btn-b, .wheel-mode #remote #dpad, .wheel-mode #remote #ones, .wheel-mode #remote #row-mid { display:block; }
-.wheel-mode #btn-a { position:absolute; left:45%; top:15%; width:60px; height:60px; }
-.wheel-mode #btn-b { position:absolute; left:8%; bottom:13%; width:120px; height:65px; }
-.wheel-mode #dpad { position:absolute; left:9%; top:8%; width:100px; height:100px; }
-.wheel-mode #btn-1, .wheel-mode #btn-2 { position:absolute; right:8%; width:90px; height:76px; font-size:30px; }
-.wheel-mode #btn-1 { top:10%; }
-.wheel-mode #btn-2 { bottom:12%; background:#d5efff; border-color:#379cdd; }
-.wheel-mode #btn-home { position:absolute; bottom:12px; left:47%; }
-.wheel-mode #btn-minus { position:absolute; bottom:16px; left:35%; }
-.wheel-mode #btn-plus { display:none; }
-.wheel-mode #btn-b::after { content:' DRIFT'; font-size:12px; }
-.wheel-mode #btn-1::after { content:' BRAKE'; display:block; font-size:10px; }
-.wheel-mode #btn-2::after { content:' GAS'; display:block; font-size:10px; }
+html.wheel-mode, html.wheel-mode body {background:#10141c;color-scheme:dark;}
+/* Paint the entire browser canvas, including landscape safe-area gutters. */
+body.wheel-mode::before {content:'';position:fixed;inset:0;background:#10141c;pointer-events:none;z-index:-1;}
+/* The phone is a physical remote. Rotate its portrait canvas back when the
+   browser rotates; do not rearrange its buttons or follow the steering tilt. */
+.wheel-mode #app {position:fixed;left:50%;top:50%;width:var(--remote-width);height:var(--remote-height);padding:12px 14px;transform:translate(-50%,-50%) rotate(var(--remote-angle));transform-origin:center;}
+.wheel-mode #remote {width:min(calc(var(--remote-width) * .86),330px);transform:none!important;}
+.wheel-mode #wheel-guide {display:block;position:absolute;left:calc(100% - 11px);top:50%;width:var(--remote-height);text-align:center;white-space:nowrap;transform:translate(-50%,-50%) rotate(90deg);font:700 12px system-ui;color:#b6d4e6;pointer-events:none;}
+.wheel-mode #btn-a,.wheel-mode .num {position:relative;}
+.wheel-mode #btn-a::after,.wheel-mode .num::after {position:absolute;left:calc(100% + 7px);top:50%;transform:translateY(-50%);font:700 10px system-ui;color:#526c82;}
+.wheel-mode #btn-a::after {content:'DRIFT';}
+.wheel-mode #btn-1::after {content:'BRAKE';}
+.wheel-mode #btn-2::after {content:'GAS / OK';white-space:nowrap;}
+.wheel-mode .dp.r::before {content:'ITEM';position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);font:700 10px system-ui;color:#526c82;}
 </style>
 </head>
 <body>
-<div id="wheel-guide">MARIO KART · Hold flat, one hand at each end<br>Roll to steer · ↑ item · − recenter</div>
 <div id="app">
+<div id="wheel-guide">MARIO KART · Hold sideways</div>
   <div id="stage">
     <div id="remote" class="asleep">
       <div id="row-top">

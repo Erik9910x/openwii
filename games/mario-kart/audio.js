@@ -120,9 +120,19 @@ export class KartAudio {
       });
     }
   }
+  get resultsReady(){return this.original.ready ? this.original.resultsReady : !this.engine.ctx || this.engine.ctx.state !== 'running' || this.engine.ctx.currentTime >= (this.fallbackFinishUntil || 0);}
+  presentResults(race,duration){this.original.presentResults(race,duration);}
+  async ui(kind='confirm') {
+    await this.unlock();
+    if (!this.engine.enabled) return;
+    const key={cursor:'uiCursor',confirm:'uiConfirm',cancel:'uiCancel',start:'uiStart'}[kind];
+    if(this.original.ready&&this.original.buffers.has(key))this.original.play(key,{bus:'ui'});
+    else this.engine.tone({freq:kind==='cursor'?880:660,dur:.055,gain:.06,type:'sine'});
+  }
   event(e, race) {
     if (race && this.original.event(e, race)) return;
     if (e.racer !== 0) return;
+    if (e.type === 'finish') this.fallbackFinishUntil = (this.engine.ctx?.currentTime || 0) + .6;
     this.engine.play("mk-" + e.type, e);
   }
   update(race) {
@@ -171,7 +181,7 @@ export class KartAudio {
         this.engine.tone({ freq: 73.42, slideTo: 40, dur: 0.12, gain: 0.07 });
       if (this.beat % 4 === 2)
         this.engine.noise({ dur: 0.08, freq: 1700, gain: 0.035 });
-      this.nextBeat = ctx.currentTime + (r.lap === 3 ? 0.19 : 0.225);
+      this.nextBeat = ctx.currentTime + (race.laps > 1 && r.lap === race.laps ? 0.19 : 0.225);
       this.beat++;
     }
   }

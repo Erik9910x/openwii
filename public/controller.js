@@ -399,7 +399,7 @@ async function lockUpright() {
       await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
     }
     if (screen.orientation && screen.orientation.lock) {
-      await screen.orientation.lock(wheelMode ? 'landscape' : 'portrait');
+      if (!wheelMode) await screen.orientation.lock('portrait');
     }
   } catch { /* unsupported (iOS) or denied — the phone's own lock still works */ }
 }
@@ -458,12 +458,35 @@ function clearWheelButtons() {
   heldPointers.clear();
   if (socket.connected) socket.emit('command', { type: 'buttons', buttons: {} });
 }
+function layoutWheelRemote() {
+  if (!wheelMode) return;
+  const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
+  const landscape = w > h;
+  // Both the standard API and Apple's legacy API describe the browser's
+  // compensation. Undo it, keeping the remote top at the physical phone top.
+  const reported = Number.isFinite(window.orientation) ? window.orientation : screen.orientation?.angle;
+  const angle = landscape ? (reported === 270 || reported === -90 ? -90 : 90) : (reported === 180 ? 180 : 0);
+  const root = document.body.style;
+  root.setProperty('--remote-width', `${landscape ? h : w}px`);
+  root.setProperty('--remote-height', `${landscape ? w : h}px`);
+  root.setProperty('--remote-vh', `${(landscape ? w : h) / 100}px`);
+  root.setProperty('--remote-angle', `${-angle}deg`);
+}
+window.addEventListener('resize', layoutWheelRemote);
+window.visualViewport?.addEventListener('resize', layoutWheelRemote);
+window.addEventListener('orientationchange', () => { if (wheelMode) clearWheelButtons(); layoutWheelRemote(); });
+screen.orientation?.addEventListener('change', () => { if (wheelMode) clearWheelButtons(); layoutWheelRemote(); });
 function setWheelMode(on) {
   if (wheelMode === on) return;
   clearWheelButtons(); wheelMode = on;
   document.body.classList.toggle('wheel-mode', on);
+  document.documentElement.classList.toggle('wheel-mode', on);
   els.sheet.classList.remove('open');
-  if (screen.orientation?.lock) screen.orientation.lock(on ? 'landscape' : 'portrait').catch(() => {});
+  if (on) { screen.orientation?.unlock?.(); layoutWheelRemote(); }
+  else {
+    for (const key of ['width','height','vh','angle']) document.body.style.removeProperty('--remote-'+key);
+    screen.orientation?.lock?.('portrait').catch(() => {});
+  }
 }
 socket.on('feedback', msg => {
   if (msg.type === 'controller-profile' && msg.profile === 'wheel') {
@@ -472,13 +495,22 @@ socket.on('feedback', msg => {
   if (msg.type === 'controller-profile' && msg.profile === 'default') setWheelMode(false);
 });
 const wheelBindings = [[els.btnA, 'A'], [els.btnB, 'B'], [els.btn1, '1'], [els.btn2, '2'],
-  [document.querySelector('.dp.u'), 'up']];
+  [document.querySelector('.dp.u'), 'up'], [document.querySelector('.dp.d'), 'down'],
+  [document.querySelector('.dp.l'), 'left'], [document.querySelector('.dp.r'), 'right']];
 for (const [el, button] of wheelBindings) {
   el.addEventListener('pointerdown', e => {
     if (!wheelMode) return;
     e.preventDefault(); el.setPointerCapture(e.pointerId);
     heldPointers.set(e.pointerId, button); heldButtons[button] = true;
-    socket.emit('command', { type: 'button', button, pressed: true }); buzz(8);
+    // Read the rendered crosspad, so menu directions follow the screen at
+    // either rotation. Keep physical button identities for racing controls.
+    let menuDirection;
+    if (['up','down','left','right'].includes(button)) {
+      const b=el.getBoundingClientRect(), d=document.getElementById('dpad').getBoundingClientRect();
+      const x=b.x+b.width/2-d.x-d.width/2, y=b.y+b.height/2-d.y-d.height/2;
+      menuDirection=Math.abs(x)>Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
+    }
+    socket.emit('command', { type: 'button', button, menuDirection, pressed: true }); buzz(8);
   });
   const release = e => {
     const key = heldPointers.get(e.pointerId); if (!key) return;

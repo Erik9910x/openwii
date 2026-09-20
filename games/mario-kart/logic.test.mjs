@@ -446,3 +446,48 @@ test("player starts eighth and malformed character choice retains all eight uniq
     assert.equal(new Set(race.racers.map((r) => r.character.id)).size, 8);
   }
 });
+
+test("results continue automatic driving without changing finish times or accepting player braking", () => {
+  const race=solo(50);race.state='results';race.player.finishTime=90;
+  for(const r of race.racers)r.speed=30;
+  const before=race.racers.map(r=>({x:r.x,z:r.z,finishTime:r.finishTime}));
+  step(race,1,{brake:true,steer:1,item:true});
+  for(const [i,r] of race.racers.entries()){
+    assert.equal(r.finishTime,before[i].finishTime);
+    assert.ok(Math.hypot(r.x-before[i].x,r.z-before[i].z)>20);
+  }
+  assert.equal(race.state,'results');
+});
+test("same mystery box becomes collectible again after one second", () => {
+  const race=solo(50),r=race.player;
+  race.boxes=[{s:r.s,lateral:0,respawn:0}];step(race,1/120);
+  assert.equal(race.boxes[0].respawn,1);
+  place(r,80);step(race,.9);assert.ok(race.boxes[0].respawn>0);
+  step(race,.1+1/120);assert.equal(race.boxes[0].respawn,0);
+});
+test("shell launch events identify the exact projectile, including consecutive throws", () => {
+  const events=[],race=solo(50);race.onEvent=e=>events.push(e);
+  for(const item of ['green','red','blue']){race.player.item=item;race.useItem();}
+  assert.deepEqual(events.filter(e=>e.type==='useItem').map(e=>e.projectile),race.objects.map(o=>o.id));
+  assert.equal(new Set(race.objects.map(o=>o.id)).size,3);
+});
+
+
+test('one-lap race finishes at eight gates and keeps driving after early results',()=>{
+ const events=[],race=new Race({seed:90,laps:1,onEvent:e=>events.push(e)});
+ race.start();
+ for(let i=0;i<16000 && race.player.finishTime===null;i++)race.update(1/120,race.cpuInput(race.player));
+ assert.ok(race.player.finishTime>15 && race.player.finishTime<80);
+ assert.equal(race.player.checkpoints,8);
+ assert.equal(race.player.lap,1);
+ assert.equal(events.filter(e=>e.type==='finish').length,1);
+ assert.equal(events.filter(e=>e.type==='finalLap'&&e.racer===0).length,0);
+ // An unfinished trailing rival must never gate the presentation or gain a fake time.
+ const rival=race.racers[1];rival.finishTime=null;place(rival,100);rival.checkpoints=0;rival.nextCheckpoint=L/8;
+ race.state='finishing';race.showResults();
+ assert.equal(race.state,'results');assert.equal(rival.finishTime,null);
+ const finishTime=race.player.finishTime,progress=race.player.progress;
+ step(race,1,{brake:true});
+ assert.ok(race.player.progress>progress);
+ assert.equal(race.player.finishTime,finishTime);
+});

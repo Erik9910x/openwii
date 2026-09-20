@@ -881,3 +881,79 @@ h2 {
 #intro #chosen {color:#263039;}
 #intro .controls {color:#334047;text-shadow:0 1px #fff8;}
 #intro .controls b {color:#182830;}
+
+/* Pass 69: screenshot-relative HUD and the source game's UI letter shapes.
+   Font outlines come from the optional source sprite pack; plain sans is the fallback. */
+@font-face {font-family:KartMessage;src:url('/assets/mario-kart/ui/message.woff') format('woff');font-display:swap;}
+@font-face {font-family:KartCounter;src:url('/assets/mario-kart/ui/counter.woff') format('woff');font-display:swap;}
+body {font-family:KartMessage,Arial,sans-serif;font-weight:normal;}
+button {font-weight:normal!important;}
+.racing #topline,.racing #drift-meter,.racing #notice[data-essential="false"] {display:none;}
+#item-frame {width:10.5vw;height:10.5vw;left:7.3vw;top:8vh;border-width:.5vw;box-shadow:0 0 0 .18vw #303b42,0 0 0 .35vw #d5d8cb66,inset 0 0 0 .25vw #222a31,inset 0 .2vw .8vw #ffffff77;}
+#lap-panel {left:4.1vw;bottom:4.3vh;gap:.65vw;font-size:2.5vw;transform:skew(-10deg);align-items:center;}
+.race-numerals {display:block;font-family:KartCounter,Arial,sans-serif;font-weight:normal;line-height:1;filter:none;text-shadow:.14vw .2vw .1vw #111;}
+#coins {color:#ffcf24;}
+#coin-icon {width:2.45vw;height:4.7vh;border-width:.2vw;}
+#coin-icon::after {left:44%;top:18%;width:13%;height:60%;}
+.flag {width:2.4vw;height:4.7vh;margin-left:.6vw;}
+#position {right:4.5vw;bottom:3vh;width:9vw;height:16.5vh;}
+#position>.race-lettering {width:7.4vw;height:100%;}
+#position sup {font-family:KartMessage,Arial,sans-serif;font-size:2.8vw;margin:0 0 2vh -1.1vw;letter-spacing:-.2vw;-webkit-text-stroke:.07vw #fff4d5;text-shadow:.2vw .3vw #2d2923;}
+#minimap {right:3.2vw;top:35vh;bottom:auto;width:21vw;height:38vh;opacity:.9;}
+#lamps {left:19%;top:13%;gap:.7vw;padding:.6vw .9vw;border-width:.2vw;}
+#lamps i {width:2.5vw;height:2.5vw;}
+#count-number {top:33%;width:24vw;height:23vh;}
+#count-number[data-value="1"],#count-number[data-value="2"],#count-number[data-value="3"] {width:12vw;}
+#wheel-ready {position:absolute;top:38%;left:20%;width:60%;font-size:2vw;text-shadow:0 2px 4px #000;background:#182128bf;padding:2vw;}
+#wheel-ready small {display:block;font-size:1.1vw;margin-top:1vw;}
+#notice[data-kind="finish"] {width:57vw;height:22vh;}
+#intro {width:61%;padding:9vh 0 7vh 5vw;}
+#intro h1 {width:40vw;}
+#intro .eyebrow {font-size:.9vw;letter-spacing:.12vw;}
+#intro .stadium-name {font-size:1.1vw;letter-spacing:.06vw;}
+#intro .intro-copy {font-size:1.15vw;letter-spacing:0;margin:3vh 0 1.6vh;text-transform:none;}
+#characters {display:grid;grid-template-columns:repeat(4,5.6vw);gap:.65vw;}
+.character {width:5.6vw;height:5.6vw;border-radius:50%;border:.2vw solid #eef3f4;background:radial-gradient(circle at 40% 25%,#dce7f1,#6c99b9);}
+.character.selected {border:.3vw solid #fff390;box-shadow:0 0 0 .22vw #e9b51f,0 0 1.4vw #ffdb5088;transform:scale(1.07);}
+#chosen {font-size:1.5vw!important;margin:1.6vh 0 1.7vh!important;font-style:normal;letter-spacing:0!important;}
+#start {width:31vw;font-size:1.8vw;padding:1.1vw 2vw;background:linear-gradient(#f3f5f5,#d0d9dd);border-color:#fff;box-shadow:inset 0 -.25vw #9baab2;}
+.driver-confirmed #start {background:linear-gradient(#fff67e,#ffd331);box-shadow:inset 0 -.25vw #c69813;}
+#start span {font-size:1.1vw;}
+#menu-hint {font-size:.95vw;margin:1.8vh 0 0;color:#303e48;}
+#intro .controls {font-size:.8vw;line-height:1.9;margin:2vh 0 0;}
+#track-label b {font-style:normal;font-size:1.9vw;}
+#results {background:linear-gradient(90deg,#111b2766,#111b2733);backdrop-filter:none;place-items:center end;}
+.results-panel {width:57vw;margin-right:5vw;padding:2.2vh 0;border:0!important;background:transparent!important;box-shadow:none;transform:none;}
+.results-panel .eyebrow {font-size:.8vw;color:white;letter-spacing:.1vw;text-shadow:0 2px 3px #000;}
+.results-panel h2 {font-size:2.8vw;font-style:normal;letter-spacing:0;margin:1.3vh 0;}
+#result-summary {font-size:1vw;margin-bottom:1.8vh;text-shadow:0 2px 3px #000;}
+.standing {grid-template-columns:3vw 3.6vw 1fr 8vw;gap:1vw;height:6.2vh;margin:.45vh 0;padding:0 1.3vw;font-size:1.4vw;color:#f7f8fc;background:linear-gradient(110deg,#181e2fd9,#303951cf);border:0;border-radius:0;box-shadow:0 .2vh .2vh #0003;animation:standings-enter .35s calc(var(--row)*.07s) both;}
+.standing.me {background:linear-gradient(100deg,#fff280,#ffdb26);color:#252c36;border-radius:0;}
+.standing img {width:3.6vw;height:5.8vh;object-fit:contain;}
+.standing b {font-family:KartCounter,Arial,sans-serif;font-size:2vw;font-weight:normal;font-style:italic;text-align:center;}
+.standing .time {font-size:1.15vw;}
+#again {width:31vw;float:right;margin:2vh 0 1.5vh;font-size:1.65vw;padding:1vw 2vw;}
+#again span {font-size:1vw;}
+.results-panel>a {clear:both;color:white;text-align:right;font-size:.9vw;text-shadow:0 2px #000;}
+@keyframes standings-enter {from{opacity:0;transform:translateX(15vw)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce) {.standing {animation:none;}}
+/* Character select: native blue panel and yellow focus frame. */
+#intro {background:linear-gradient(90deg,#77b5e9f2,#90c9eed9 65%,transparent);}
+#intro:before {background:repeating-conic-gradient(#d7ecff55 0% 25%,#2a74c233 0% 50%) 0 0/150px 150px;}
+#intro .eyebrow,#intro .stadium-name,#intro .intro-copy,#intro #chosen,#intro .controls,#intro .controls b,#menu-hint {color:#203e61;text-shadow:0 1px #d0edff66;}
+.character {border-radius:5%;border-color:#c2e6fc70;background:linear-gradient(#91c3eccc,#568fcb99);box-shadow:0 2px 5px #14426b55;overflow:visible;}
+.character.selected {border-radius:5%;border-color:#fff697;background:linear-gradient(#ecf4fc,#9bc8e8);box-shadow:0 0 0 .22vw #f2ce23,0 0 1vw #ffdb50a0;}
+.character img {padding:2%;}
+/* Utility controls remain available on pointer hover or keyboard focus. */
+.racing #topline {display:flex;opacity:0;}
+.racing #topline:hover,.racing #topline:focus-within {opacity:1;}
+.racing.capture #topline {display:none;}
+/* Native results use menu numerals; digital glyphs belong to race counters. */
+.standing b {font-family:KartMessage,Arial,sans-serif;font-style:normal;font-size:1.7vw;}
+
+/* Race length shares the driver menu; phone left/right selects after confirmation. */
+#lap-options {display:flex;align-items:center;gap:.7vw;width:31vw;margin:0 0 1.5vh;color:#203e61;}
+#lap-options>span {font-size:.9vw;margin-right:auto;}
+#lap-options button {font:inherit;font-size:1.15vw;padding:.5vw 1.1vw;border:2px solid #d7ecff;border-radius:4px;color:#203e61;background:#d7ecffb8;cursor:pointer;}
+#lap-options button[aria-pressed="true"] {background:linear-gradient(#fff67e,#ffd331);border-color:#fff6a0;box-shadow:0 2px 0 #bd931a;}
+.driver-confirmed #lap-options button[aria-pressed="true"],#lap-options button:focus-visible {outline:3px solid #fff;outline-offset:2px;}
