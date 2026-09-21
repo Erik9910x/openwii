@@ -16,9 +16,11 @@
     "tv": "open -na 'Google Chrome' --args --user-data-dir=$HOME/.openwii-chrome --no-first-run --no-default-browser-check --autoplay-policy=no-user-gesture-required --new-window https://localhost:8443/",
     "dev": "node --watch server.js",
     "cert": "node scripts/gen-cert.js",
-    "test": "node --test \"core/**/*.test.mjs\" \"games/**/*.test.mjs\"",
+    "test": "node tests/kart-prototype/server.cjs",
     "build:kart-assets": "node games/mario-kart/pipeline/build.mjs",
-    "test:kart-browser": "node games/mario-kart/browser-evidence.mjs"
+    "test:kart-browser": "node games/mario-kart/browser-evidence.mjs",
+    "test:kart-public": "node games/mario-kart/public-review.mjs",
+    "test:unit": "node --test \"core/**/*.test.mjs\" \"games/**/*.test.mjs\" \"tests/kart-prototype/*.test.mjs\""
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -27,7 +29,7 @@
     "three": "^0.185.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "devDependencies": {
     "playwright": "^1.63.0"

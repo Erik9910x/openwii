@@ -253,7 +253,10 @@ body.wheel-mode::before {content:'';position:fixed;inset:0;background:#10141c;po
    browser rotates; do not rearrange its buttons or follow the steering tilt. */
 .wheel-mode #app {position:fixed;left:50%;top:50%;width:var(--remote-width);height:var(--remote-height);padding:12px 14px;transform:translate(-50%,-50%) rotate(var(--remote-angle));transform-origin:center;}
 .wheel-mode #remote {width:min(calc(var(--remote-width) * .86),330px);transform:none!important;}
+/* Tablets fit a proportionally enlarged face along the long edge. */
+.wheel-mode.wheel-tablet #remote {width:360px;height:780px;max-height:none;flex-shrink:0;transform:scale(var(--remote-scale))!important;transform-origin:center;}
 .wheel-mode #wheel-guide {display:block;position:absolute;left:calc(100% - 11px);top:50%;width:var(--remote-height);text-align:center;white-space:nowrap;transform:translate(-50%,-50%) rotate(90deg);font:700 12px system-ui;color:#b6d4e6;pointer-events:none;}
+.wheel-mode.wheel-tablet #wheel-guide {font-size:17px;}
 .wheel-mode #btn-a,.wheel-mode .num {position:relative;}
 .wheel-mode #btn-a::after,.wheel-mode .num::after {position:absolute;left:calc(100% + 7px);top:50%;transform:translateY(-50%);font:700 10px system-ui;color:#526c82;}
 .wheel-mode #btn-a::after {content:'DRIFT';}

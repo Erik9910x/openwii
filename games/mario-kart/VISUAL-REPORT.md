@@ -36,7 +36,7 @@ Stadium keeps the anti-gravity/glider showcase and matches your supplied referen
 With the game served on port 8080:
 
 ```bash
-npm test
+npm run test:unit
 npm run test:kart-browser
 node games/mario-kart/visual-review.mjs
 node games/mario-kart/visual-demo.mjs

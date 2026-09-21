@@ -67,7 +67,7 @@ From the main checkout:
 
 ```bash
 npm run build:kart-assets  # installed Blender; BLENDER may override its path
-npm test
+npm run test:unit
 HTTP=1 PORT=8080 NO_OPEN=1 npm start
 ```
 

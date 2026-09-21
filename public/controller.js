@@ -462,6 +462,10 @@ function layoutWheelRemote() {
   if (!wheelMode) return;
   const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
   const landscape = w > h;
+  const shortSide = Math.min(w, h), longSide = Math.max(w, h);
+  // Scale the complete face on tablets so buttons grow with the remote.
+  document.body.classList.toggle('wheel-tablet', shortSide >= 600);
+  document.body.style.setProperty('--remote-scale', String(Math.min((longSide - 64) / 780, (shortSide - 64) / 360)));
   // Both the standard API and Apple's legacy API describe the browser's
   // compensation. Undo it, keeping the remote top at the physical phone top.
   const reported = Number.isFinite(window.orientation) ? window.orientation : screen.orientation?.angle;
@@ -484,7 +488,8 @@ function setWheelMode(on) {
   els.sheet.classList.remove('open');
   if (on) { screen.orientation?.unlock?.(); layoutWheelRemote(); }
   else {
-    for (const key of ['width','height','vh','angle']) document.body.style.removeProperty('--remote-'+key);
+    document.body.classList.remove('wheel-tablet');
+    for (const key of ['width','height','vh','angle','scale']) document.body.style.removeProperty('--remote-'+key);
     screen.orientation?.lock?.('portrait').catch(() => {});
   }
 }
