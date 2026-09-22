@@ -4,8 +4,8 @@ Codex's implementation (`339339e`) was merged into `main` as `607f4a4`, retainin
 
 ## Working directories
 
-- **Continue development:** `/Users/patricksun/GitHub/OpenWii`, branch `main`. Run `npm start` here for HTTPS and real phone sensors.
-- **Claude archive:** `/Users/patricksun/GitHub/OpenWii-claude`, branch `archive/claude-mario-kart`, snapshot commit `8bf3d9b`. All 20 modified/new source paths were committed unchanged, including unfinished edits to other games. They were not merged into main.
+- **Continue development:** the repository root, branch `main`. Run `npm start` here for HTTPS and real phone sensors.
+- **Claude archive:** a separate local checkout, branch `archive/claude-mario-kart`, snapshot commit `8bf3d9b`. All 20 modified/new source paths were committed unchanged, including unfinished edits to other games. They were not merged into main.
 - **Original Codex checkout:** the fully merged `codex/mario-kart` branch and `.worktrees/codex` directory were removed after verification. Commit `339339e` remains in main history. Models and evidence were preserved in the main checkout; older evidence variants are under ignored `games/mario-kart/evidence/original-codex-worktree/`.
 
 Claude's ignored assets, audio and development certificates were copied to the archive and byte-verified (275 files). A local checksum manifest is in [evidence/migration-archive-manifest.json](evidence/migration-archive-manifest.json). The archive's dependencies can be installed with `npm install` if it needs to be run later.

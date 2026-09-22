@@ -47,7 +47,7 @@ The review script stages poses; the demo script drives through real keyboard eve
 ## Morning review
 
 ```bash
-cd /Users/patricksun/GitHub/OpenWii
+# Run from the repository root
 npm start
 ```
 

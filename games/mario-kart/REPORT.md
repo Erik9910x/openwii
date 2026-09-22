@@ -2,7 +2,7 @@
 
 Latest follow-up: [pass73 review and clips](evidence/overnight/73-lap-finish/review.html). The build history below describes the original integration; current validation and changes are in [DEMO-ITERATION.md](DEMO-ITERATION.md).
 
-The **Mario Kart** channel was built on `codex/mario-kart` and is now integrated into `main` at `/Users/patricksun/GitHub/OpenWii`. It is the first launcher tile, followed by Fruit Ninja. Claude's alternative is preserved separately; see [MIGRATION.md](MIGRATION.md). Nothing was pushed.
+The **Mario Kart** channel was built on `codex/mario-kart` and is now integrated into `main` in the repository root. It is the first launcher tile, followed by Fruit Ninja. Claude's alternative is preserved separately; see [MIGRATION.md](MIGRATION.md). Nothing was pushed.
 
 ## What was built
 
@@ -46,7 +46,7 @@ This is an original stadium/character reconstruction with arcade physics and app
 After the migration, run **from the repo root**:
 
 ```bash
-cd /Users/patricksun/GitHub/OpenWii
+# Run from the repository root
 npm start
 ```
 

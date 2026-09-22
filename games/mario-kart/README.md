@@ -65,6 +65,10 @@ audio. No asset download or Blender build is required. Original-game models,
 course data, fonts and recordings used in the polished video demo are optional
 local files, excluded from Git; a fresh clone looks and sounds different.
 
+Six bundled item icons are official Nintendo promotional artwork; see their
+[source credits](item-art/SOURCES.md). These images are not covered by the
+repository's MIT software license.
+
 - [Optional model/course conversion tools](pipeline/SOURCE-ASSETS.md)
 - [Optional audio and synthesized fallback](AUDIO.md)
 - [Silent development-video prototype and graphics showcase](../../tests/kart-prototype/README.md)
@@ -82,5 +86,5 @@ The public browser check runs a full race with optional assets unavailable.
 their local evidence links and earlier test counts are not release requirements.
 
 This is an independent fan project, not an official Nintendo game or emulator.
-The repository's MIT license covers its software, not third-party artwork or
-recordings supplied separately.
+The repository's MIT license covers its software, not Nintendo or other
+third-party artwork and recordings.
