@@ -1,6 +1,6 @@
-# Optional native UI assets
+# Native UI assets
 
-The runtime uses the original game's Latin letter shapes, counters and character portraits when this local pack is present. Assets stay in the ignored `assets/mario-kart/ui/` folder; an asset-free checkout uses the existing fallback portraits and system font.
+The runtime uses the original game's Latin letter shapes, counters and character portraits from the included runtime pack. The prepared assets are included in `assets/mario-kart/ui/`; missing files use the fallback portraits and system font. Rebuilding them from source sheets is optional.
 
 Sources inspected September 15, 2026:
 

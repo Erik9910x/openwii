@@ -60,17 +60,23 @@ seven computer-controlled racers, using the first phone's player slot.
 
 ## What comes with the repository
 
-The public game runs with a generated track, procedural models and synthesized
-audio. No asset download or Blender build is required. Original-game models,
-course data, fonts and recordings used in the polished video demo are optional
-local files, excluded from Git; a fresh clone looks and sounds different.
+The repository includes the runtime pack used by the polished demo: eight
+converted racers, Mario Kart Stadium and its driving surfaces, music and sound
+effects, UI fonts, portraits, and stadium TV artwork. A normal clone followed by
+`npm ci` and `npm start` loads this pack automatically; no separate downloads or
+Blender build are needed. The pack adds approximately 102 MB to the checkout.
+
+See the [runtime pack credits](../../assets/mario-kart/README.md) for provenance.
+Downloaded source archives and development recordings are not included. The
+procedural models, generated course, and synthesized audio remain as fallbacks
+if runtime files are unavailable.
 
 Six bundled item icons are official Nintendo promotional artwork; see their
 [source credits](item-art/SOURCES.md). These images are not covered by the
 repository's MIT software license.
 
-- [Optional model/course conversion tools](pipeline/SOURCE-ASSETS.md)
-- [Optional audio and synthesized fallback](AUDIO.md)
+- [Model/course conversion tools](pipeline/SOURCE-ASSETS.md)
+- [Audio preparation and synthesized fallback](AUDIO.md)
 - [Silent development-video prototype and graphics showcase](../../tests/kart-prototype/README.md)
 
 ## Checks
@@ -81,7 +87,9 @@ npm run test:unit
 npm run test:kart-public
 ```
 
-The public browser check runs a full race with optional assets unavailable.
+The public browser check verifies the bundled models, source course, fonts, and
+sample audio, then drives a complete race through the finish/results/restart flow.
+`npm run test:kart-fallback` separately verifies play without the runtime pack.
 `REPORT.md`, `VISUAL-REPORT.md` and iteration notes record development history;
 their local evidence links and earlier test counts are not release requirements.
 

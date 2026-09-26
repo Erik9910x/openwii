@@ -37,9 +37,9 @@ Use the computer's number keys in the same browser window:
 
 Top-row numbers and the numeric keypad both work. Space does not advance stages. All four character stages sit stationary on the same test track. After a brief hold, the camera makes one smooth eight-second 360° orbit around the kart, then stops at the original viewing angle. Press the same number again to replay the orbit. All showcase scenes hide the HUD and remain silent; use **F** for fullscreen. Driving pauses during the showcase. After returning with **0**, release and press the phone's gas button again to resume.
 
-The finished local Mario and stadium assets load on first selection, then remain cached for quick switches. Before recording, visit **4** and **5** once, then return to **1**. The finished stages need the existing ignored local source pack in `assets/mario-kart/`; missing assets show a recoverable message. The simple driving test and stages 1–2 do not require it.
+The finished local Mario and stadium assets load on first selection, then remain cached for quick switches. Before recording, visit **4** and **5** once, then return to **1**. The finished stages need the included runtime pack in `assets/mario-kart/`; missing assets show a recoverable message. The simple driving test and stages 1–2 do not require it.
 
-These are reconstructed demonstration stages for the build video, not recovered historical versions. Stages 3–5 reuse the project's current local source assets; stages 1–2 are built from basic geometry.
+These are reconstructed demonstration stages for the build video, not recovered historical versions. Stages 3–5 reuse the project's included source-derived assets; stages 1–2 are built from basic geometry.
 
 ## Implementation
 

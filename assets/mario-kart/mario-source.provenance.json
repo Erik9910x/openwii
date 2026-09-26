@@ -1,0 +1,21 @@
+{
+  "source": "Nintendo Mario Kart 8 assets, The Models Resource; not original OpenWii artwork or covered by its software license",
+  "pages": [
+    "https://models.spriters-resource.com/wii_u/mariokart8/asset/292062/",
+    "https://models.spriters-resource.com/wii_u/mariokart8/asset/293519/",
+    "https://models.spriters-resource.com/wii_u/mariokart8/asset/353815/"
+  ],
+  "credits": [
+    "Nintendo",
+    "Mystie (Mario extraction)",
+    "RayK (Standard Kart submission)",
+    "BillyGaming964 (tire submission)"
+  ],
+  "convertedAt": "2026-09-11T16:55:02.863Z",
+  "sha256": "d5f922bfaf99e315a855e32e6f47fbabef3b77f371ce98f33aa5a3a2eabf4c79",
+  "converters": {
+    "source-models.js": "b064c526fecd2342c77cdd0ee711b6718b317d2c8925cdd812906667417d7f88",
+    "source-pose.js": "29da49a00f7948d388c79dd9769b85fb9adeedda4f5005a1c7ba94c546812712",
+    "source-build.html": "aa9415639edb15ae79fb6d33c76b8abdbbab29acb584cf92cdfaa614bdfb4d14"
+  }
+}

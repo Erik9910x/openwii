@@ -1,0 +1,776 @@
+{
+  "version": 1,
+  "cues": {
+    "countdown": {
+      "file": "countdown.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_321.wav",
+      "sha256": "6347050243f5df6ed24b997ac7eb270a077933369096ef3e57b4476a140b6c2d",
+      "gain": 0.8,
+      "duration": 1.074
+    },
+    "go": {
+      "file": "go.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_GO.wav",
+      "sha256": "f251767e96f4bbfaf88a9e5f7e0162f4c2a4dec94bcb568a26b3936b20d05d10",
+      "gain": 0.9,
+      "duration": 1.572
+    },
+    "roulette": {
+      "file": "roulette.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_ITEM_ROULETTE.wav",
+      "sha256": "5749d06ea6095a38ca56bba25f9de1810c98235c64a1f5c77d70ef1ac942d982",
+      "gain": 0.48,
+      "duration": 7.6336
+    },
+    "decide": {
+      "file": "decide.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_ITEM_DECIDE.wav",
+      "sha256": "8c1e4bea04c194f51bcb46385908d505fa09c0ce16e5d1b52fe4e7acfeb9366f",
+      "gain": 0.85,
+      "duration": 0.6727
+    },
+    "drift1": {
+      "file": "drift1.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DRIFT_HIBANA_BLUE.wav",
+      "sha256": "2893859e6b30ec2396be12fd8f46986e470f01e9317dfb45ba7369db934a5b7b",
+      "gain": 0.38,
+      "duration": 10.7857
+    },
+    "drift2": {
+      "file": "drift2.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DRIFT_HIBANA_RED.wav",
+      "sha256": "27133e9e6ec7d0bc1ec0d16445378bee689ef0f6dd852f72eedc0bc47ed01178",
+      "gain": 0.42,
+      "duration": 8.0319
+    },
+    "drift3": {
+      "file": "drift3.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DRIFT_HIBANA_PURPLE.wav",
+      "sha256": "b9fe4064df6c261b266e7559f6fd922468a0154da329e652c0ae3ff87f4de021",
+      "gain": 0.45,
+      "duration": 8.2657
+    },
+    "turbo": {
+      "file": "turbo.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DASH_MINI.wav",
+      "sha256": "6d47ea8d3821db628b3769c59800ef0da77df5e90033cdff47c6b1d144369d71",
+      "gain": 0.75,
+      "duration": 0.9788
+    },
+    "ultra": {
+      "file": "ultra.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DASH_MINI_ULTRA.wav",
+      "sha256": "ae0ffaf3a0a9edb8b4ad887a940f6efe2868f7795c9cb2fdf1f0e25a057a4048",
+      "gain": 0.78,
+      "duration": 1.6797
+    },
+    "boost": {
+      "file": "boost.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_DASH_BOARD_TND.wav",
+      "sha256": "6dd795e69b357d953d38ca7edef5e3094c105947c78f43e64f2c8214abd75714",
+      "gain": 0.7,
+      "duration": 1.2347
+    },
+    "rocket": {
+      "file": "rocket.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_START_DASH.wav",
+      "sha256": "7bcef70340a7e8abefeecb5985b46eab2122699cafa1e075d1a8a851481ab49d",
+      "gain": 0.7,
+      "duration": 1.2637
+    },
+    "burnout": {
+      "file": "burnout.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_START_FAIL.wav",
+      "sha256": "c8c5a77cb4b87e51b1df388870652e072e898d0765ff0969d8bf4edb1161615a",
+      "gain": 0.65,
+      "duration": 1.792
+    },
+    "hop": {
+      "file": "hop.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_MINI_JUMP.wav",
+      "sha256": "899baae4f68e39becb68d75cf8bd099426e3a256ecd98d1da6e6bb935aa3c6a4",
+      "gain": 0.5,
+      "duration": 0.4454
+    },
+    "trick": {
+      "file": "trick.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_JUMP_ACTION.wav",
+      "sha256": "a13405081a22d86d1c501eda920aff48bcabb30c1c16be192f04bd6c341e0187",
+      "gain": 0.65,
+      "duration": 1.0287
+    },
+    "land": {
+      "file": "land.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_LAND_SKID_1.wav",
+      "sha256": "964195ac3f676d5b80697ce0d2f507393451fde0d78ecbc1e1759fdad24312e5",
+      "gain": 0.7,
+      "duration": 0.1138
+    },
+    "contact": {
+      "file": "contact.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_COL_CAR.wav",
+      "sha256": "bb1cacf16acd1e36ea08e94b5b98748286247639edbcbe790e4b9c394e3d3799",
+      "gain": 0.7,
+      "duration": 0.63
+    },
+    "bump": {
+      "file": "bump.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_COL_HOVER.wav",
+      "sha256": "6c925d6cd6aa7f3669074cba326253f71628378ddfda847cb034e159f9c49317",
+      "gain": 0.6,
+      "duration": 0.636
+    },
+    "hit": {
+      "file": "hit.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_CRASH.wav",
+      "sha256": "11a76a3b2acfd342213c1f8df15aef6b0c32c08915b9e83a329a75d56c984639",
+      "gain": 0.7,
+      "duration": 1.1105
+    },
+    "wall": {
+      "file": "wall.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_HALFCRASH.wav",
+      "sha256": "80555f701376cae0bd41768a278ea7aaf0d5520fd5aa56907c952d44f1ebfedd",
+      "gain": 0.55,
+      "duration": 1.0349
+    },
+    "hoverIn": {
+      "file": "hoverIn.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_START_HOVERZONE.wav",
+      "sha256": "a49ea15dee1aa64dc9e5bc5c8b85ce33f5cad0c6d5ee8a8d8cce56c96bcddf75",
+      "gain": 0.6,
+      "duration": 1.0285
+    },
+    "hoverOut": {
+      "file": "hoverOut.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_FINISH_HOVER.wav",
+      "sha256": "fd6a13721710ebf6f7ffa2f8dab5d7e93ecadec81e30e430d6e4c8672a185359",
+      "gain": 0.5,
+      "duration": 1.5054
+    },
+    "hover": {
+      "file": "hover.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_HOVER_LOOP.wav",
+      "sha256": "44a2771e8ffc51fc2d0d9f136fd15b2fc05bd3da7f40aff21c5e06c4e09d1df2",
+      "gain": 0.16,
+      "duration": 6.2084
+    },
+    "glider": {
+      "file": "glider.wav",
+      "source": "sfx/common/Common Sounds/SE_KT_GLIDER_START.wav",
+      "sha256": "70e511aae880918a73e2e5b2f53974dfbe3d211df0d603b2e7f417db37c899b9",
+      "gain": 0.55,
+      "duration": 1.332
+    },
+    "coin": {
+      "file": "coin.wav",
+      "source": "sfx/common/Common Sounds/SE_ITM_Coin.wav",
+      "sha256": "470ef4599125099ef28bc309c43cbd645580a368ca83bd0e818697c082e37912",
+      "gain": 0.7,
+      "duration": 0.6048
+    },
+    "equip": {
+      "file": "equip.wav",
+      "source": "sfx/common/Common Sounds/SE_ITM_KAME_EQUIP_1.wav",
+      "sha256": "469087eaf26c40008037176e54f636a46a8450e921c04c6d813ac3640751b440",
+      "gain": 0.5,
+      "duration": 6.3969
+    },
+    "alarm": {
+      "file": "alarm.wav",
+      "source": "sfx/common/Common Sounds/SE_ITM_ALARM.wav",
+      "sha256": "6e30a1467565d9b41449ad49e235e621f2e421719207a94d44a6f467bc6af27e",
+      "gain": 0.4,
+      "duration": 6.0079
+    },
+    "starHit": {
+      "file": "starHit.wav",
+      "source": "sfx/common/Common Sounds/SE_ITM_STAR_HIT.wav",
+      "sha256": "e47761700e0fee5cc0c596e75d289a31d9255dddd5654bff812aa4c9dc7c1bbf",
+      "gain": 0.6,
+      "duration": 0.849
+    },
+    "lap": {
+      "file": "lap.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_LAP.wav",
+      "sha256": "85a6f274dd829cce2f0932f8b7948f4dad8d3d0728ece669e806bc50ac66aa31",
+      "gain": 0.8,
+      "duration": 2.8428
+    },
+    "pause": {
+      "file": "pause.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_PAUSE_ON.wav",
+      "sha256": "09a0e8dccad6b60603889df4693b3f92ab1908dca202edd42b5d415ef900952c",
+      "gain": 0.75,
+      "duration": 0.964
+    },
+    "resume": {
+      "file": "resume.wav",
+      "source": "sfx/race/Race Sounds/SE_RC_PAUSE_OFF.wav",
+      "sha256": "f9f703181b310a668ccb33bbe8e86eb927dd0b54e2153cc495c6943142ffb844",
+      "gain": 0.65,
+      "duration": 1.1467
+    },
+    "road": {
+      "file": "road.wav",
+      "source": "sfx/terrain/Terrain/GND_ASPHALT/pSE_GND_RUN_ASPHALT.wav",
+      "sha256": "71aa791d5cccdfdfe1c6025b7e666c7e45b1563263753faee507a45d64b1d959",
+      "gain": 0.18,
+      "duration": 0.0938
+    },
+    "slip": {
+      "file": "slip.wav",
+      "source": "sfx/terrain/Terrain/GND_ASPHALT/pSE_GND_SLIP_ASPHALT.wav",
+      "sha256": "e2b571048042fb51855e974f909e3f914189e0cfa09e6a8ebbbd765a6f09231c",
+      "gain": 0.28,
+      "duration": 1.6451,
+      "loopStart": 0.9209375,
+      "loopEnd": 1.645125
+    },
+    "grass": {
+      "file": "grass.wav",
+      "source": "sfx/terrain/Terrain/GND_GRASS/pSE_GND_RUN_GRASS.wav",
+      "sha256": "47148cc7780be57d142f16221ee14435705f1eb31ca80ae477705d0386b70bd9",
+      "gain": 0.18,
+      "duration": 1.1343,
+      "loopStart": 0.4440625,
+      "loopEnd": 1.1343125
+    },
+    "crowd": {
+      "file": "crowd.wav",
+      "source": "sfx/course/Courses/Gu_FirstCircuit/SE_ENV_AUDIENCE.ny.32.wav",
+      "sha256": "a556e070d7c65f815108032a1978eb2228fb060adc537964c944bfd67e06932d",
+      "gain": 0.2,
+      "duration": 19.8016,
+      "loopStart": 6.629875,
+      "loopEnd": 19.80159375
+    },
+    "idle": {
+      "file": "idle.wav",
+      "source": "sfx/kart/Karts/K_Std/idle_NoiseReduction.b.32.wav",
+      "sha256": "e172eb9282573222c5ea0e7aad130d4f27d2ab65bd89c00aea11618d9ceed1df",
+      "gain": 0.28,
+      "duration": 3.6077,
+      "loopStart": 1.81825,
+      "loopEnd": 3.60771875
+    },
+    "engine": {
+      "file": "engine.wav",
+      "source": "sfx/kart/Karts/K_Std/AccelNormal.ry.32.wav",
+      "sha256": "3f84ea08353d6881c4d590fcba769fe01b8ef28dbaad642310033d2a08a60398",
+      "gain": 0.3,
+      "duration": 9.3376,
+      "loopStart": 7.365125,
+      "loopEnd": 9.33759375
+    },
+    "rev": {
+      "file": "rev.wav",
+      "source": "sfx/kart/Karts/K_Std/AccelBeforeStart.q.32.wav",
+      "sha256": "89b682d39c9ce00be220683fb06338896a922631bbb8ab8911b05e48d283e8f0",
+      "gain": 0.3,
+      "duration": 4.0927,
+      "loopStart": 2.1196875,
+      "loopEnd": 4.09275
+    },
+    "dashEngine": {
+      "file": "dashEngine.wav",
+      "source": "sfx/kart/Karts/K_Std/DashEngine.ry.32.wav",
+      "sha256": "5a28135d5e3b8c76442d2b6ecf101a0a288702af04ee509cffb3f897bfeb4806",
+      "gain": 0.35,
+      "duration": 2.3083,
+      "loopStart": 1.5596875,
+      "loopEnd": 2.3083125
+    },
+    "miniEngine": {
+      "file": "miniEngine.wav",
+      "source": "sfx/kart/Karts/K_Std/DashEngineMiniTurbo.ry.32.wav",
+      "sha256": "ff42493b7d04c607ccd42ffce2572efe1492f40744741ee68415165358258b6a",
+      "gain": 0.35,
+      "duration": 0.999,
+      "loopStart": 0.609875,
+      "loopEnd": 0.99903125
+    },
+    "voice-mario-throw-0": {
+      "file": "voice-mario-throw-0.wav",
+      "source": "sfx/mario/Mario/mr_Item_Put-04TS0.85_Amb.ny.32.wav",
+      "sha256": "36b0e80d429c44a0d1232d00910ec1351966c11f14dcd3ccacebe04e2b648f8b",
+      "gain": 0.65,
+      "duration": 0.4662
+    },
+    "voice-mario-jump-0": {
+      "file": "voice-mario-jump-0.wav",
+      "source": "sfx/mario/Mario/mr_Action_Jump-10_Amb.ny.32.wav",
+      "sha256": "210f86c363b4099133d610895057dbb526cd67840ae4e03e54b15a1d1a35c7d1",
+      "gain": 0.65,
+      "duration": 0.603
+    },
+    "voice-mario-damage-0": {
+      "file": "voice-mario-damage-0.wav",
+      "source": "sfx/mario/Mario/mr_Damage_L-09_Amb.ny.32.wav",
+      "sha256": "67f4c7339fc09c467fff0c23dc2fde953ddf4c2c5e24d73bdc127903792650ac",
+      "gain": 0.65,
+      "duration": 1.1295
+    },
+    "voice-mario-damage-1": {
+      "file": "voice-mario-damage-1.wav",
+      "source": "sfx/mario/Mario/mr_Damage_M-02_Amb.ny.32.wav",
+      "sha256": "a2eeae255bd6d477e86b5f2b1548ddd3ccd0ff922efb388ac50006b287f2e19f",
+      "gain": 0.65,
+      "duration": 0.911
+    },
+    "voice-mario-rocket-0": {
+      "file": "voice-mario-rocket-0.wav",
+      "source": "sfx/mario/Mario/mr_Action_RocketStart-01_Amb.ny.32.wav",
+      "sha256": "a373d6ea8044de2a706cc18a8d2226c19bddb1643d9b22555131b7a1ce9dea9f",
+      "gain": 0.65,
+      "duration": 1.689
+    },
+    "voice-luigi-throw-0": {
+      "file": "voice-luigi-throw-0.wav",
+      "source": "sfx/luigi/Luigi/lg_Item_Put-04_Amb.ny.32.wav",
+      "sha256": "00d951297702a8c0e59f39e198cdba614bd18c85537f9c521c13b7cebf2e1a9e",
+      "gain": 0.65,
+      "duration": 0.3185
+    },
+    "voice-luigi-throw-1": {
+      "file": "voice-luigi-throw-1.wav",
+      "source": "sfx/luigi/Luigi/lg_Item_Put-08_Amb.ny.32.wav",
+      "sha256": "9c0d4fca62e715da2591c3a4641d3d92d26c3301d0cb837d038e8576217f9f22",
+      "gain": 0.65,
+      "duration": 0.1907
+    },
+    "voice-luigi-damage-0": {
+      "file": "voice-luigi-damage-0.wav",
+      "source": "sfx/luigi/Luigi/lg_Damage_L-04_Amb.ny.32.wav",
+      "sha256": "b16fb230300fbcedd8ef247560880aab3bcbb4d7c100be0713e61b2bf51237fc",
+      "gain": 0.65,
+      "duration": 1.1372
+    },
+    "voice-luigi-damage-1": {
+      "file": "voice-luigi-damage-1.wav",
+      "source": "sfx/luigi/Luigi/lg_Damage_M-04_Amb.ny.32.wav",
+      "sha256": "5fb7fd1cb3b438dedc54840a87074049750a4573d0bc0a42d3e86c6a16d1c1e7",
+      "gain": 0.65,
+      "duration": 0.7432
+    },
+    "voice-peach-jump-0": {
+      "file": "voice-peach-jump-0.wav",
+      "source": "sfx/peach/Peach/pc_Action_JumpAction-11_cut_Amb.ny.32.wav",
+      "sha256": "9ac6b70f689dc9cfcf240f29f44dfb1e432f7321cc46eb1e8585ddd708747067",
+      "gain": 0.65,
+      "duration": 1.7568
+    },
+    "voice-peach-jump-1": {
+      "file": "voice-peach-jump-1.wav",
+      "source": "sfx/peach/Peach/pc_Action_JumpL-06_Amb.ny.32.wav",
+      "sha256": "da09daf0c4d56d456b39c2593d43bb486a8d1f87c36df0007174d97e8d3b0f2d",
+      "gain": 0.65,
+      "duration": 1.4384
+    },
+    "voice-peach-damage-0": {
+      "file": "voice-peach-damage-0.wav",
+      "source": "sfx/peach/Peach/pc_Damage_L-07_Amb.ny.32.wav",
+      "sha256": "5024957ea47d3192817770bc5348bcba2fdeeb8c83688e0ffb1a164074818776",
+      "gain": 0.65,
+      "duration": 0.5594
+    },
+    "voice-peach-rocket-0": {
+      "file": "voice-peach-rocket-0.wav",
+      "source": "sfx/peach/Peach/pc_Action_RocketStart-01_Amb.ny.32.wav",
+      "sha256": "1e669f0ba307eeb9c63cebce9c6047215acc20efb5da7ff20ca6ada6f524fbeb",
+      "gain": 0.65,
+      "duration": 0.7706
+    },
+    "voice-peach-rocket-1": {
+      "file": "voice-peach-rocket-1.wav",
+      "source": "sfx/peach/Peach/pc_Action_RocketStart-06_Amb.ny.32.wav",
+      "sha256": "5325be7437e71b612062ab2c6edf00d3fc42bc264d74a7c6ed1bcb37dca65f3d",
+      "gain": 0.65,
+      "duration": 0.8189
+    },
+    "voice-yoshi-throw-0": {
+      "file": "voice-yoshi-throw-0.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RI-PUT_16_Amb.ny.32.wav",
+      "sha256": "aaa3d777dfc97754eff702984f745042a1816813e3cb56b673c808f706084a5c",
+      "gain": 0.65,
+      "duration": 0.3149
+    },
+    "voice-yoshi-throw-1": {
+      "file": "voice-yoshi-throw-1.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RI-PUT_17_Amb.ny.32.wav",
+      "sha256": "d4224990a832ef9c725a3db743e6b4ada9e58b899c8fdf182ce656719f95680f",
+      "gain": 0.65,
+      "duration": 0.209
+    },
+    "voice-yoshi-jump-0": {
+      "file": "voice-yoshi-jump-0.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RA-JUMS_03_Amb.ny.32.wav",
+      "sha256": "0a81bd6f1cba0e1abf148b704e7bed99b7e6a0ab8198f07d7f5fc93ef06931c8",
+      "gain": 0.65,
+      "duration": 0.5539
+    },
+    "voice-yoshi-jump-1": {
+      "file": "voice-yoshi-jump-1.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RA-JUMS_06_Amb.ny.32.wav",
+      "sha256": "8276ccbc1c8218dd8741073b2865aac72386169841eb13c7de9a5d7327e725f1",
+      "gain": 0.65,
+      "duration": 0.6284
+    },
+    "voice-yoshi-rocket-0": {
+      "file": "voice-yoshi-rocket-0.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RA-STRM_03_Amb.ny.32.wav",
+      "sha256": "49a60d49ec9a3c6ae5611f2ae19317196212a0ece8ca3554fc6a59a4731a477a",
+      "gain": 0.65,
+      "duration": 1.1914
+    },
+    "voice-yoshi-rocket-1": {
+      "file": "voice-yoshi-rocket-1.wav",
+      "source": "sfx/yoshi/Yoshi/YS-RA-STRM_09_Amb.ny.32.wav",
+      "sha256": "57e4031032127fccdffc7dd148bbafd59f4285fef2dcaac297db94678a94616b",
+      "gain": 0.65,
+      "duration": 0.9612
+    },
+    "voice-toad-throw-0": {
+      "file": "voice-toad-throw-0.wav",
+      "source": "sfx/toad/Toad/ko_Item_Put-09_Amb.ny.32.wav",
+      "sha256": "fd492465ae7d1ccf6099ebe1d41f23e47df610fdd3cd59948f1248c909755cdc",
+      "gain": 0.65,
+      "duration": 0.1579
+    },
+    "voice-toad-jump-0": {
+      "file": "voice-toad-jump-0.wav",
+      "source": "sfx/toad/Toad/ko_Action_JumpAction-07_Amb.ny.32.wav",
+      "sha256": "0c1da4863a532fa53ab2f7dcb3d0650f8ad9c246ecab560e5fbfe6aee5ea5256",
+      "gain": 0.65,
+      "duration": 0.463
+    },
+    "voice-toad-jump-1": {
+      "file": "voice-toad-jump-1.wav",
+      "source": "sfx/toad/Toad/ko_Action_JumpL-04_short_Amb.ny.32.wav",
+      "sha256": "486996355c4449e4d5c23e1d3da771803b50f0e362c8caab447cefab17593c1f",
+      "gain": 0.65,
+      "duration": 1.1911
+    },
+    "voice-toad-damage-0": {
+      "file": "voice-toad-damage-0.wav",
+      "source": "sfx/toad/Toad/ko_Damage_L-08_Amb.ny.32.wav",
+      "sha256": "c02ee79d0db074bbeed66cc9c79e48e2ee5db940235eb0a8c4308f2f3c96c332",
+      "gain": 0.65,
+      "duration": 0.6494
+    },
+    "voice-toad-damage-1": {
+      "file": "voice-toad-damage-1.wav",
+      "source": "sfx/toad/Toad/ko_Damage_L-12_Amb.ny.32.wav",
+      "sha256": "699924cd2e5bcd73ac800d1cb8f732e616955eafd6ee7176bc6f2dd20ab15a30",
+      "gain": 0.65,
+      "duration": 0.9101
+    },
+    "voice-toad-rocket-0": {
+      "file": "voice-toad-rocket-0.wav",
+      "source": "sfx/toad/Toad/ko_Action_RocketStart-02_08_short_Amb.ny.32.wav",
+      "sha256": "0e53f4242ebf83e8abc1e23552c2d493ec9814eebebb496c6bad0deb26cee516",
+      "gain": 0.65,
+      "duration": 0.7472
+    },
+    "voice-toad-rocket-1": {
+      "file": "voice-toad-rocket-1.wav",
+      "source": "sfx/toad/Toad/ko_Action_RocketStart-05_Amb.ny.32.wav",
+      "sha256": "c514d467c158c23f0bec9d0e8eeaa8c2ee230ed6ee5934d1470ede19a7c7e782",
+      "gain": 0.65,
+      "duration": 0.7391
+    },
+    "voice-bowser-throw-0": {
+      "file": "voice-bowser-throw-0.wav",
+      "source": "sfx/bowser/Bowser/kp_Item_Put-01_Amb.ny.32.wav",
+      "sha256": "e64ef4653c86bc3d9e340dcd679aa247363e98cafef074c6158496261eebddec",
+      "gain": 0.65,
+      "duration": 0.2185
+    },
+    "voice-bowser-throw-1": {
+      "file": "voice-bowser-throw-1.wav",
+      "source": "sfx/bowser/Bowser/kp_Item_Put-03_Amb.ny.32.wav",
+      "sha256": "500da06bb7bb790c8d7c571d671d8dc47c9ddea1c724f686fde2743c5c3a1f05",
+      "gain": 0.65,
+      "duration": 0.2638
+    },
+    "voice-bowser-jump-0": {
+      "file": "voice-bowser-jump-0.wav",
+      "source": "sfx/bowser/Bowser/kp_Action_JumpAction-02_Amb.ny.32.wav",
+      "sha256": "f91640c3e89d1df8672d8ff7346bcce70b9dd5708d0e3bad26da50416400cf49",
+      "gain": 0.65,
+      "duration": 0.6269
+    },
+    "voice-bowser-jump-1": {
+      "file": "voice-bowser-jump-1.wav",
+      "source": "sfx/bowser/Bowser/kp_Action_JumpAction-07_Amb.ny.32.wav",
+      "sha256": "b285359a9f9bff80c0545597cc0a880cb22e9991b49df5002ce47442cd8b9db7",
+      "gain": 0.65,
+      "duration": 1.0738
+    },
+    "voice-bowser-damage-0": {
+      "file": "voice-bowser-damage-0.wav",
+      "source": "sfx/bowser/Bowser/kp_Damage_L-03_Amb.ny.32.wav",
+      "sha256": "0f6c1b78f979020dc36594339189149f587b1f3a1cc9ccd85d0c55777e956458",
+      "gain": 0.65,
+      "duration": 1.0181
+    },
+    "voice-bowser-damage-1": {
+      "file": "voice-bowser-damage-1.wav",
+      "source": "sfx/bowser/Bowser/kp_Damage_M-07_Amb.ny.32.wav",
+      "sha256": "a82b081148c7c054c473ee94bcdc954880aa2e70962765ea409a1b5a0c59b2c4",
+      "gain": 0.65,
+      "duration": 0.7177
+    },
+    "voice-bowser-rocket-0": {
+      "file": "voice-bowser-rocket-0.wav",
+      "source": "sfx/bowser/Bowser/kp_Action_RocketStart-01_Amb.ny.32.wav",
+      "sha256": "bba7c398f13ffce9743cb11520424c503eee211ea70cecafa92e13ed993aa304",
+      "gain": 0.65,
+      "duration": 0.7582
+    },
+    "voice-donkey-kong-throw-0": {
+      "file": "voice-donkey-kong-throw-0.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RI-PUT_11_Amb.ny.32.wav",
+      "sha256": "333e0384d2375643ab624ee9ddc191cfeab9c0b507b89cd5f7b5b226c1a89f95",
+      "gain": 0.65,
+      "duration": 0.3102
+    },
+    "voice-donkey-kong-throw-1": {
+      "file": "voice-donkey-kong-throw-1.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RI-PUT_3_Amb.ny.32.wav",
+      "sha256": "63bc0456f9751686b9ab4ced3382ca6a880e1afa7622f6fd9e5ecdadc7d6906c",
+      "gain": 0.65,
+      "duration": 0.4819
+    },
+    "voice-donkey-kong-jump-0": {
+      "file": "voice-donkey-kong-jump-0.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RA-JUMS_11_Amb.ny.32.wav",
+      "sha256": "c84e758f3c90d5af84c052308889b1e55fcf989b809bc93a54ab5839f2c29ff8",
+      "gain": 0.65,
+      "duration": 0.6212
+    },
+    "voice-donkey-kong-jump-1": {
+      "file": "voice-donkey-kong-jump-1.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RA-JUMS_13_Amb.ny.32.wav",
+      "sha256": "aad950d85b54989767e5138dfb991a14733ddbc237244702b975f259ed740f39",
+      "gain": 0.65,
+      "duration": 1.0046
+    },
+    "voice-donkey-kong-rocket-0": {
+      "file": "voice-donkey-kong-rocket-0.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RA-STRM_1_Amb.ny.32.wav",
+      "sha256": "9043239aa7d3f717de2b996a5222ac7bc29a26437d8fdb0c8633f7d41047f1ec",
+      "gain": 0.65,
+      "duration": 1.3833
+    },
+    "voice-donkey-kong-rocket-1": {
+      "file": "voice-donkey-kong-rocket-1.wav",
+      "source": "sfx/donkey-kong/Donkey Kong/DK-RA-STRM_4_Amb.ny.32.wav",
+      "sha256": "74a1397f99388d32ecad20a9cd3a420610007d3844ed6b7b86f65366e852c4f1",
+      "gain": 0.65,
+      "duration": 1.1184
+    },
+    "voice-koopa-throw-0": {
+      "file": "voice-koopa-throw-0.wav",
+      "source": "sfx/koopa/Koopa Troopa/VO_NK_ITM_PUT_Amb.ny.32.wav",
+      "sha256": "d4a407fa1d57d8123426c698aec7c8e9ba116f65e3c87304432c4cfdd0c087ab",
+      "gain": 0.65,
+      "duration": 0.233
+    },
+    "voice-koopa-damage-0": {
+      "file": "voice-koopa-damage-0.wav",
+      "source": "sfx/koopa/Koopa Troopa/VO_NK_DMG_SPN_Amb.ny.32.wav",
+      "sha256": "6d85090c33a00e7a4983d641df580c5ff2a6bd88525a839477a9cfd4ba8a1530",
+      "gain": 0.65,
+      "duration": 1.1821
+    },
+    "voice-koopa-rocket-0": {
+      "file": "voice-koopa-rocket-0.wav",
+      "source": "sfx/koopa/Koopa Troopa/VO_NK_STRM2_Amb.ny.32.wav",
+      "sha256": "f8e7433e9c267f84aacb34e151ad19e8d4f1eae860b55ad16c8731fa9feda7e9",
+      "gain": 0.65,
+      "duration": 1.349
+    },
+    "voice-koopa-rocket-1": {
+      "file": "voice-koopa-rocket-1.wav",
+      "source": "sfx/koopa/Koopa Troopa/VO_NK_STRM_Amb.ny.32.wav",
+      "sha256": "d1440431a649c14042390d7e629444219373473c6ab7c7b8557568f8ad982e40",
+      "gain": 0.65,
+      "duration": 1.295
+    },
+    "race": {
+      "file": "race.ogg",
+      "source": "music/mario-kart-stadium.flac",
+      "sha256": "c81ae7131810b11617e04bf971864a67aba965d5cf480c2e802bad904046edc0",
+      "gain": 0.46,
+      "duration": 130.78875,
+      "loopStart": 5,
+      "loopEnd": 121.75675,
+      "loopCorrelation": 0.9932
+    },
+    "raceLead": {
+      "file": "raceLead.ogg",
+      "source": "music/mario-kart-stadium-frontrunning.flac",
+      "sha256": "34797c240ad936446f1cd9ab4fa9ed8f696a5874d14867819ddf4f4289497e64",
+      "gain": 0.46,
+      "duration": 130.78875,
+      "loopStart": 5,
+      "loopEnd": 121.75675,
+      "loopCorrelation": 0.9934
+    },
+    "final": {
+      "file": "final.ogg",
+      "source": "music/mario-kart-stadium-final-lap.flac",
+      "sha256": "af8baf9746121f7037d8a4d1974b28d60bdf7669d751b8a847b9ef6460b0f020",
+      "gain": 0.46,
+      "duration": 111.31775,
+      "loopStart": 5,
+      "loopEnd": 103.18175,
+      "loopCorrelation": 0.99163
+    },
+    "finalLead": {
+      "file": "finalLead.ogg",
+      "source": "music/mario-kart-stadium-final-lap-frontrunning.flac",
+      "sha256": "aca678fb62501d8bcda5009b11ff75efdc719caadac678eeba637f0b3e76fdeb",
+      "gain": 0.46,
+      "duration": 111.31775,
+      "loopStart": 5,
+      "loopEnd": 103.18175,
+      "loopCorrelation": 0.99157
+    },
+    "menu": {
+      "file": "menu.ogg",
+      "source": "music/selection-screen-course-select.flac",
+      "sha256": "31d7e7af407a4167173dd1e1edd64ea9ba776864cff168bbfe9e2481ca5c9e56",
+      "gain": 0.46,
+      "duration": 58.235,
+      "loopStart": 5,
+      "loopEnd": 27.3255,
+      "loopCorrelation": 0.9933
+    },
+    "win": {
+      "file": "win.ogg",
+      "source": "music/race-results-you-won.flac",
+      "sha256": "58957cbd8f2af6b30ef3815292e1d30843f30c6ce69546ce3cbd886455d86904",
+      "gain": 0.46,
+      "duration": 99.3555,
+      "loopStart": 5,
+      "loopEnd": 81.3635,
+      "loopCorrelation": 0.64126
+    },
+    "lose": {
+      "file": "lose.ogg",
+      "source": "music/race-results-you-lost.flac",
+      "sha256": "560d2ec316d1a254326859a6951c7e4ffcd14cd5b08c49caac7183711b30eb77",
+      "gain": 0.46,
+      "duration": 62.348,
+      "loopStart": 5,
+      "loopEnd": 50.5475,
+      "loopCorrelation": 0.85496
+    },
+    "grid": {
+      "file": "grid.ogg",
+      "source": "music/starting-grid-grand-prix-vs-race.flac",
+      "sha256": "5daa7928f6904059e5c9f720149c15a4a1649d3da97717976ac8a36a0046f179",
+      "gain": 0.7,
+      "duration": 2.3775
+    },
+    "finalLap": {
+      "file": "finalLap.ogg",
+      "source": "music/final-lap.flac",
+      "sha256": "f1e7da702b86dac82f6624d8187cbbff4411d91473b746cd8191ec5ea8004b82",
+      "gain": 0.7,
+      "duration": 3.99975
+    },
+    "finish": {
+      "file": "finish.ogg",
+      "source": "music/finish.flac",
+      "sha256": "004a9a587974d220fe962d280c2de49915442ee9b8f3927660d7b0bee2153a8d",
+      "gain": 0.7,
+      "duration": 2.703
+    },
+    "finishWin": {
+      "file": "finishWin.ogg",
+      "source": "music/finish-1st-place.flac",
+      "sha256": "05cc85625cb7dd6a739229a5c24591247213d3dc2cb7e31c8f3930869d4bd7eb",
+      "gain": 0.7,
+      "duration": 7.02075
+    },
+    "finishMid": {
+      "file": "finishMid.ogg",
+      "source": "music/finish-2nd-6th-place.flac",
+      "sha256": "1a7be735f220e88f8fc02251fff6e01c565a1d4030c995c7b25410cc72cf0695",
+      "gain": 0.7,
+      "duration": 5.63575
+    },
+    "finishLose": {
+      "file": "finishLose.ogg",
+      "source": "music/finish-7th-12th-place.flac",
+      "sha256": "e3c40bdd142225b9ab552c99c977f40be466e2ddfe21ecb53d64ce5a52ca7d72",
+      "gain": 0.7,
+      "duration": 5.44375
+    },
+    "star": {
+      "file": "star.ogg",
+      "source": "music/super-star.flac",
+      "sha256": "09e3260a2538e8f2ac474d6310f86bc30f756bfada31d694507c81d23b27e420",
+      "gain": 0.46,
+      "duration": 22.0
+    },
+    "uiCursor": {
+      "file": "uiCursor.wav",
+      "source": "sfx/menu/Menu Sounds/SE_SYS_CMN_CURSOR.wav",
+      "sha256": "ddd8f3e3702a15912190c06f44c1134607ff053cf57b54f8c2cb1f6671546d38",
+      "gain": 0.7,
+      "duration": 0.0931875
+    },
+    "uiConfirm": {
+      "file": "uiConfirm.wav",
+      "source": "sfx/menu/Menu Sounds/SE_SYS_BTN_OK.wav",
+      "sha256": "8fdf67a1be78e6c1395c20c0f54e2dd086e60c43febef00a2110a43b12527120",
+      "gain": 0.65,
+      "duration": 2.475
+    },
+    "uiCancel": {
+      "file": "uiCancel.wav",
+      "source": "sfx/menu/Menu Sounds/SE_SYS_CANCEL_S.wav",
+      "sha256": "edb20a0c9f2627b5c83ce0a9a810a21b50ef53efda499b77d24714c58312315e",
+      "gain": 0.55,
+      "duration": 1.524
+    },
+    "uiStart": {
+      "file": "uiStart.wav",
+      "source": "sfx/menu/Menu Sounds/SE_SYS_RACE_OK.wav",
+      "sha256": "b5733ef2ca88672a2f035eb3fa07461168ac0e9d5e5c393a0d84274d662b8425",
+      "gain": 0.65,
+      "duration": 2.5034375
+    },
+    "resultsIn": {
+      "file": "resultsIn.wav",
+      "source": "sfx/race/Race Sounds/SE_RSLT_IN.wav",
+      "sha256": "51bfdfbf1123a67f07e7fa422306ab0a41745096c7d296758cb2afe19d187799",
+      "gain": 0.7,
+      "duration": 0.3680625
+    },
+    "resultsCount": {
+      "file": "resultsCount.wav",
+      "source": "sfx/race/Race Sounds/SE_RSLT_TIME_COUNT.wav",
+      "sha256": "b1e18041e24111fef1f5535199a3d877d6899f2edf9be89ffe8790b9d7f562bf",
+      "gain": 0.32,
+      "duration": 5.2479375
+    },
+    "resultsStop": {
+      "file": "resultsStop.wav",
+      "source": "sfx/race/Race Sounds/SE_RSLT_TIME_COUNT_STOP.wav",
+      "sha256": "8195c0b0be243af37a9af04a73b7fb6cc744565a68687c560c6bb4f5ef833a49",
+      "gain": 0.65,
+      "duration": 0.309
+    }
+  },
+  "unresolved": [
+    "isolated box shatter",
+    "shell flight and impact",
+    "banana placement and slip",
+    "blue-shell wind-up and explosion"
+  ]
+}

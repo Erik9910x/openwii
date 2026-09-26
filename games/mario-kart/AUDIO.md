@@ -1,8 +1,8 @@
 # Mario Kart audio
 
-The game now prefers the optional original sample pack at `/assets/mario-kart/audio/manifest.json`. The original downloads remain under `assets/mario-kart/audio-source/`; neither folder is committed. [Browse the source collection](../../assets/mario-kart/audio-source/index.html).
+The game loads the included prepared sample pack at `/assets/mario-kart/audio/manifest.json`. Its manifest and referenced runtime cues are included in Git. The original download archives remain local under the ignored `assets/mario-kart/audio-source/` folder; rebuilding from those archives is optional. See the [runtime pack credits](../../assets/mario-kart/README.md).
 
-Build the prepared pack with `python3 games/mario-kart/pipeline/prepare-audio.py` from the repository root. The builder uses NumPy, SciPy and ffmpeg (or imageio-ffmpeg), preserves the originals, records source SHA-256 hashes, uses exact WAV loop metadata and detects repeated musical passages for music loops. The current selection is 97 cues, approximately 24 MB on disk; all-course source banks are not browser dependencies.
+Build the prepared pack with `python3 games/mario-kart/pipeline/prepare-audio.py` from the repository root. The builder uses NumPy, SciPy and ffmpeg (or imageio-ffmpeg), preserves the originals, records source SHA-256 hashes, uses exact WAV loop metadata and detects repeated musical passages for music loops. The current selection is 104 cues, approximately 25 MB on disk; all-course source banks are not browser dependencies.
 
 `sample-audio.js` owns music, engine/road, effects, voices and ambience buses. The first Start gesture waits for preparation before countdown. Normal and frontrunning arrangements start at the same audio-clock timestamp, drift charge stops on release/cancellation, and roulette ends on item selection. Pause suspends the graph, mute controls the complete master mix, and race finish clears driving loops. Star music returns to the ongoing race arrangement's musical position. Relevant nearby rival impacts and item uses are attenuated and panned.
 

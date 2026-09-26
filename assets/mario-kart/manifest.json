@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "generatedBy": "OpenWii local pipelines: original models plus Nintendo source conversions",
+  "characters": [
+    {
+      "id": "mario",
+      "file": "mario-source.glb"
+    },
+    {
+      "id": "luigi",
+      "file": "luigi-source.glb"
+    },
+    {
+      "id": "peach",
+      "file": "peach-source.glb"
+    },
+    {
+      "id": "yoshi",
+      "file": "yoshi-source.glb"
+    },
+    {
+      "id": "toad",
+      "file": "toad-source.glb"
+    },
+    {
+      "id": "bowser",
+      "file": "bowser-source.glb"
+    },
+    {
+      "id": "donkey-kong",
+      "file": "donkey-kong-source.glb"
+    },
+    {
+      "id": "koopa",
+      "file": "koopa-source.glb"
+    }
+  ],
+  "course": {
+    "model": "stadium-source.glb",
+    "route": "stadium-route.json",
+    "tvBrand": {
+      "image": "stadium-tv-brand.png",
+      "frames": 49,
+      "columns": 7,
+      "frameWidth": 160,
+      "frameHeight": 90,
+      "padding": 2
+    }
+  }
+}

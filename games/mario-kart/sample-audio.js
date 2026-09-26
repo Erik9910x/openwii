@@ -1,6 +1,6 @@
 import {surfaceAt} from './track.js';
-/** Optional original sample pack. No downloads or source binaries are required
- * by the repository; pipeline/prepare-audio.py prepares the local manifest. */
+/** Bundled prepared sample pack with a synthesized fallback when unavailable.
+ * pipeline/prepare-audio.py rebuilds the manifest from local source archives. */
 export class SampledKartAudio {
   constructor(engine) {
     this.engine=engine;this.buffers=new Map();this.loops=new Map();this.nodes=new Set();

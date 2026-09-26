@@ -1,6 +1,6 @@
 # Optional local source conversions
 
-These tools convert locally supplied Nintendo Mario Kart 8 models. The source artwork is not original OpenWii artwork and is not covered by the repository's MIT software license. Archives, textures, converted GLBs and source-derived route data remain in ignored local `assets/` or `evidence/` directories. The public repository retains its procedural fallback.
+These tools convert locally supplied Nintendo Mario Kart 8 models. The source artwork is not original OpenWii artwork and is not covered by the repository's MIT software license. The selected converted GLBs, source-derived route data, prepared audio, and UI assets are included in `assets/mario-kart/` for normal play. Original download archives, extracted source folders, alternate packs, and review evidence remain ignored. The public repository also retains its procedural fallback.
 
 The tools use the existing local HTTP server and installed Three.js/Playwright/Chrome. They do not download assets, publish anything or change a gameplay manifest. Start the normal development server before invoking them. Default conversion origin is `http://localhost:8080`; override with `KART_BUILD_ORIGIN`.
 
