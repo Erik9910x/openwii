@@ -12,7 +12,7 @@ Requires **Node.js 22+**, **OpenSSL**, a computer browser with WebGL 2, and a
 motion-capable phone browser on the **same Wi-Fi**.
 
 ```bash
-git clone https://github.com/pattssun/OpenWii.git
+git clone https://github.com/Erik9910x/openwii.git
 cd OpenWii
 npm ci
 npm start
